@@ -1,5 +1,6 @@
 import { createInertiaApp } from '@inertiajs/svelte'
 import  { mount } from 'svelte';
+import Layout from '../layouts/Layout.svelte';
 
 createInertiaApp({
   // Set default page title
@@ -25,9 +26,7 @@ createInertiaApp({
     // and use the following line.
     // see https://inertia-rails.dev/guide/pages#default-layouts
     //
-    // return { default: page.default, layout: page.layout || Layout }
-
-    return page
+    return { default: page.default, layout: page.layout || Layout }
   },
 
   setup({ el, App, props }) {

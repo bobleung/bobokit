@@ -6,4 +6,13 @@ class User < ApplicationRecord
   validates :email_address, uniqueness: true
   validates :first_name, presence: true
   validates :last_name, presence: true
+
+  def sanitised
+    {
+      id: id,
+      email_address: email_address,
+      first_name: first_name,
+      last_name: last_name
+    }
+  end
 end
