@@ -9,10 +9,11 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
+      UserMailer.email_verification(@user).deliver_now
       start_new_session_for @user
       Rails.logger.info "██ >> Sign up success"
-      flash[:success] = "Profile created successfully!"
-      redirect_to root_path, flash: { success: "Account created successfully! Welcome to myLocums." }
+      flash[:success] = "Account created! Please check your email to verify your account."
+      redirect_to email_verification_path
     else
       Rails.logger.info "██ >> Sign up failed"
       Rails.logger.info @user.errors.inspect

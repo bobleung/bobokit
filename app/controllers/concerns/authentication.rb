@@ -20,6 +20,12 @@ module Authentication
     def require_authentication
       resume_session || request_authentication
     end
+    
+    def require_email_verification
+      if Current.user && !Current.user.email_verified?
+        redirect_to email_verification_path
+      end
+    end
 
     def resume_session
       Current.session ||= find_session_by_cookie

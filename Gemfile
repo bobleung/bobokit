@@ -41,6 +41,9 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Load environment variables from .env file
+  gem "dotenv-rails"
 end
 
 group :development do
@@ -57,3 +60,6 @@ end
 gem "inertia_rails", "~> 3.9"
 
 gem "vite_rails", "~> 3.0"
+
+# SendGrid for email delivery
+gem "sendgrid-ruby"

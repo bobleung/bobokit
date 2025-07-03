@@ -21,4 +21,9 @@ Rails.application.routes.draw do
   get "profile", to: "users#profile"
   patch "profile", to: "users#update_profile"
   resources :users
+  
+  # Email verification routes
+  get "email_verification", to: "email_verifications#show"
+  get "verify_email", to: "email_verifications#verify"
+  post "resend_verification", to: "email_verifications#resend"
 end
