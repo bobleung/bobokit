@@ -1,5 +1,5 @@
 <script>
-    import { router } from "@inertiajs/svelte";
+    import { router, Link } from "@inertiajs/svelte";
 
     let { user = {}, errors = {} } = $props();
 
@@ -82,6 +82,15 @@
                         required
                     />
                 </label>
+                
+                {#if !user?.email_verified}
+                    <p class="text-sm text-warning">
+                        <span class="material-symbols-outlined text-warning inline-block mr-1" style="font-size: 1rem;">warning</span>
+                        <Link href="/email_verification" class="link link-warning">
+                            Email unverified
+                        </Link>
+                    </p>
+                {/if}
                 
                 <div class="divider">Password</div>
                 
