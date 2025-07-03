@@ -178,3 +178,7 @@ app/
 - Flash messages are shared globally via `inertia_share` in ApplicationController
 - Can access flash messages in frontend components through shared props
 - Supports `success` and `error` flash message types
+
+### Email Verification and Access Control
+- Added email verification flow to enhance user authentication
+- Implemented `allow_unverified_access` helper method to manage user access based on email verification status

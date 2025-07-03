@@ -1,5 +1,6 @@
 class SessionsController < ApplicationController
   allow_unauthenticated_access only: %i[ new create ]
+  allow_unverified_access only: %i[ destroy ]
   rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to new_session_url, alert: "Try again later." }
 
   def new
@@ -12,7 +13,7 @@ class SessionsController < ApplicationController
       redirect_to after_authentication_url
     else
       render inertia: "users/login", props: {
-        errors: { authentication: ["Invalid email or password"] }
+        errors: { authentication: [ "Invalid email or password" ] }
       }
     end
   end
