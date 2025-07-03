@@ -11,7 +11,8 @@ class UsersController < ApplicationController
     if @user.save
       start_new_session_for @user
       Rails.logger.info "██ >> Sign up success"
-      redirect_to root_path
+      flash[:success] = "Profile created successfully!"
+      redirect_to root_path, flash: { success: "Account created successfully! Welcome to myLocums." }
     else
       Rails.logger.info "██ >> Sign up failed"
       Rails.logger.info @user.errors.inspect

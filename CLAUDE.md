@@ -170,3 +170,11 @@ app/
 - Application is configured for Kamal deployment
 - Uses Thruster for HTTP acceleration
 - Dockerfile included for containerization
+
+## Memories
+
+### Flash Message Implementation
+- Implemented flash messages within the Inertia.js integration
+- Flash messages are shared globally via `inertia_share` in ApplicationController
+- Can access flash messages in frontend components through shared props
+- Supports `success` and `error` flash message types
