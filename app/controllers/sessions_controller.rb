@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
   def create
     if user = User.authenticate_by(params.permit(:email_address, :password))
       start_new_session_for user
-      redirect_to root_path
+      redirect_to after_authentication_url
     else
       render inertia: "users/login", props: {
         errors: { authentication: ["Invalid email or password"] }

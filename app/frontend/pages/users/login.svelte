@@ -1,6 +1,6 @@
 <script>
     import { router, Link } from "@inertiajs/svelte";
-    
+
     let { errors = {} } = $props();
     
     let email = $state('');
@@ -31,7 +31,7 @@
                     </div>
                 {/if}
                 <label class="input validator">
-                    <span class="material-symbols-outlined opacity-50">search</span>
+                    <span class="material-symbols-outlined opacity-50">mail</span>
                     <input
                         type="email"
                         class="grow"

@@ -9,6 +9,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
+      start_new_session_for @user
       Rails.logger.info "██ >> Sign up success"
       redirect_to root_path
     else
@@ -23,6 +24,6 @@ class UsersController < ApplicationController
 
   private
   def user_params
-    params.expect(user: [ :email_address, :password, :password_confirmation ])
+    params.expect(user: [ :first_name, :last_name, :email_address, :password, :password_confirmation ])
   end
 end

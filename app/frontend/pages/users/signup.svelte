@@ -3,6 +3,8 @@
 
     let { user = {}, errors = {} } = $props();
 
+    let first_name = $state(user.first_name || '');
+    let last_name = $state(user.last_name || '');
     let email = $state(user.email_address || '');
     let password = $state(user.password || '');
     let password_confirmation = $state(user.password_confirmation || '');
@@ -12,6 +14,8 @@
 
         router.post('/users', {
             user: {
+                first_name: first_name,
+                last_name: last_name,
                 email_address: email,
                 password: password,
                 password_confirmation: password_confirmation
@@ -35,7 +39,27 @@
                     </div>
                 {/if}
                 <label class="input validator">
-                    <span class="material-symbols-outlined opacity-50">search</span>
+                    <span class="material-symbols-outlined opacity-50">person</span>
+                    <input
+                        type="text"
+                        class="grow"
+                        placeholder="First Name"
+                        bind:value={first_name}
+                        required
+                    />
+                </label>
+                <label class="input validator">
+                    <span class="material-symbols-outlined opacity-50">person</span>
+                    <input
+                        type="text"
+                        class="grow"
+                        placeholder="Last Name"
+                        bind:value={last_name}
+                        required
+                    />
+                </label>
+                <label class="input validator">
+                    <span class="material-symbols-outlined opacity-50">mail</span>
                     <input
                         type="email"
                         class="grow"
