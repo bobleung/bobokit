@@ -1,11 +1,11 @@
 <script>
-    import { router } from "@inertiajs/svelte";
+    import { router, Link } from "@inertiajs/svelte";
+    
     let email = $state('');
     let password = $state('');
 
     function handleSubmit(event) {
         event.preventDefault();
-        console.log('Login attempt:', { email, password });
 
         router.post('/session', {
             email_address: email,
@@ -46,7 +46,7 @@
                 </p>
                 <div class="flex flex-col items-end gap-2">
                     <button type="submit" class="btn btn-primary">Login</button>
-                    <p>No Account? Sign up here.</p>
+                    <p>No Account? <Link href="/signup" class="link">Sign up here.</Link></p>
                 </div>
             </div>
         </div>
