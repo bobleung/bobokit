@@ -18,5 +18,7 @@ Rails.application.routes.draw do
   get "signup", to: "users#new"
   get "login", to: "sessions#new"
   get "logout", to: "sessions#destroy"
+  get "profile", to: "users#profile"
+  patch "profile", to: "users#update_profile"
   resources :users
 end
