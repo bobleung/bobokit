@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Rails 8.0 application called "myLocums-dasiy" that uses Inertia.js with Svelte for the frontend. The application includes user authentication with sessions and password management.
+This is a Rails 8.0 application called "myLocums-dasiy" that uses Inertia.js v2 with Svelte 5 for the frontend, creating a single-page application experience without traditional API endpoints. The application includes session-based user authentication and is styled with Tailwind CSS v4 and DaisyUI components.
 
 ## Development Commands
 
@@ -68,10 +68,10 @@ bundle exec brakeman
 ## Architecture
 
 ### Frontend Stack
-- **Svelte 5** - Frontend framework
-- **Inertia.js** - Connects Rails backend to Svelte frontend
-- **Tailwind CSS** - Styling framework with DaisyUI components
-- **Vite** - Build tool and development server
+- **Svelte 5** - Frontend framework with runes-based reactivity (`$state`, `$props`, `$derived`)
+- **Inertia.js v2** - Seamless Rails-Svelte integration without API endpoints
+- **Tailwind CSS v4** - Utility-first CSS framework with DaisyUI components
+- **Vite** - Build tool and development server with HMR support
 
 ### Backend Stack
 - **Rails 8.0** - Main application framework
@@ -82,22 +82,34 @@ bundle exec brakeman
 
 ### Key Patterns
 
+#### Inertia.js Integration
+Controllers render Inertia responses instead of traditional views:
+```ruby
+# Instead of render :show
+render inertia: 'users/login', props: { errors: {} }
+```
+
+Global data sharing via `inertia_share` in ApplicationController:
+```ruby
+inertia_share do
+  {
+    user: Current.user&.sanitised,
+    flash: { success: flash[:success], error: flash[:error] }
+  }
+end
+```
+
+#### Frontend Architecture
+- **Component Organization**: Reusable components in `app/frontend/components/`, page components in `app/frontend/pages/`
+- **Layout System**: Default layout (`app/frontend/layouts/Layout.svelte`) automatically applied to all pages
+- **Svelte 5 Patterns**: Use `let { prop } = $props()` for props, `$derived()` for reactive values
+- **Navigation**: Use Inertia's `<Link>` component for all internal navigation to maintain SPA behavior
+
 #### Authentication System
 - Session-based authentication using `app/controllers/concerns/authentication.rb`
-- Users have many sessions (table-backed sessions)
+- Table-backed sessions (not cookie-based) with `Session` model
 - Current user/session stored in `Current` thread-local storage
-- Password reset functionality included
-
-#### Frontend Structure
-- Svelte components in `app/frontend/pages/`
-- Inertia.js setup in `app/frontend/entrypoints/inertia.js`
-- Assets in `app/frontend/assets/`
-- Entrypoints in `app/frontend/entrypoints/`
-
-#### Rails Structure
-- Standard Rails MVC architecture
-- Authentication concern mixed into ApplicationController
-- Inertia.js integration for API-less SPA behavior
+- User data sanitized via `User#sanitised` method before frontend exposure
 
 ## File Structure Highlights
 
@@ -106,23 +118,45 @@ app/
 ├── controllers/
 │   ├── concerns/authentication.rb    # Authentication logic
 │   ├── sessions_controller.rb        # Login/logout
-│   └── passwords_controller.rb       # Password reset
+│   ├── passwords_controller.rb       # Password reset
+│   └── users_controller.rb           # User registration
 ├── frontend/
-│   ├── pages/                        # Svelte page components
-│   ├── entrypoints/                  # Vite entry points
+│   ├── components/                   # Reusable Svelte components (Navbar.svelte)
+│   ├── layouts/                      # Layout components (Layout.svelte)
+│   ├── pages/                        # Svelte page components (auto-resolved by Inertia)
+│   ├── entrypoints/                  # Vite entry points (inertia.js)
 │   └── assets/                       # Static assets
 ├── models/
-│   ├── user.rb                       # User model with has_secure_password
-│   ├── session.rb                    # Session model
-│   └── current.rb                    # Thread-local current user/session
+│   ├── user.rb                       # User model with has_secure_password and sanitised method
+│   ├── session.rb                    # Session model for table-backed sessions
+│   └── current.rb                    # Thread-local current user/session storage
 ```
 
 ## Development Notes
 
 ### Adding New Pages
-1. Create Svelte component in `app/frontend/pages/`
+1. Create Svelte component in `app/frontend/pages/` (e.g., `users/profile.svelte`)
 2. Add route in `config/routes.rb`
-3. Create controller action that renders with Inertia
+3. Create controller action that renders with `render inertia: 'users/profile', props: { data: {} }`
+
+### Svelte 5 Component Patterns
+```svelte
+<script>
+  import { Link } from '@inertiajs/svelte';
+  
+  let { user, errors = {} } = $props();
+  
+  const isAuthenticated = $derived(!!user);
+</script>
+
+<!-- Use Link for internal navigation -->
+<Link href="/profile" class="btn">Profile</Link>
+```
+
+### Data Flow
+- Controllers pass data via `props:` in `render inertia:`
+- Global data shared via `inertia_share` in ApplicationController
+- Access shared data in components via props from layout
 
 ### Database Changes
 - Use `bin/rails generate migration` for schema changes
