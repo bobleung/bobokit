@@ -1,6 +1,8 @@
 <script>
     import { router, Link } from "@inertiajs/svelte";
     
+    let { errors = {} } = $props();
+    
     let email = $state('');
     let password = $state('');
 
@@ -19,6 +21,15 @@
         <div class="card w-96 bg-base-200 card-lg shadow-sm">
             <div class="card-body flex flex-col gap-4">
                 <h2 class="card-title">Login</h2>
+                {#if errors && Object.keys(errors).length > 0}
+                    <div class="alert alert-error">
+                        {#each Object.entries(errors) as [field, messages]}
+                            {#each messages as message}
+                                <p>{field.charAt(0).toUpperCase() + field.slice(1)} {message}</p>
+                            {/each}
+                        {/each}
+                    </div>
+                {/if}
                 <label class="input validator">
                     <span class="material-symbols-outlined opacity-50">search</span>
                     <input

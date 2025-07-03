@@ -1,9 +1,11 @@
 <script>
     import { router, Link } from "@inertiajs/svelte";
 
-    let email = $state('');
-    let password = $state('');
-    let password_confirmation = $state('');
+    let { user = {}, errors = {} } = $props();
+
+    let email = $state(user.email_address || '');
+    let password = $state(user.password || '');
+    let password_confirmation = $state(user.password_confirmation || '');
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -23,6 +25,15 @@
         <div class="card w-96 bg-base-200 card-lg shadow-sm">
             <div class="card-body flex flex-col gap-4">
                 <h2 class="card-title">Sign up</h2>
+                {#if errors && Object.keys(errors).length > 0}
+                    <div class="alert alert-error">
+                        {#each Object.entries(errors) as [field, messages]}
+                            {#each messages as message}
+                                <p>{field.charAt(0).toUpperCase() + field.slice(1)} {message}</p>
+                            {/each}
+                        {/each}
+                    </div>
+                {/if}
                 <label class="input validator">
                     <span class="material-symbols-outlined opacity-50">search</span>
                     <input
@@ -55,6 +66,8 @@
                         required
                         minlength="3"
                         maxlength="30"
+                        pattern={password}
+                        title="Password confirmation must match password"
                     />
                 </label>
                 <p class="validator-hint">

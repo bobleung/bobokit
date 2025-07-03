@@ -2,7 +2,8 @@ class UsersController < ApplicationController
   allow_unauthenticated_access only: %i[ new create ]
 
   def new
-    render inertia: "users/signup"
+    user_data = params[:user] || {}
+    render inertia: "users/signup", props: { user: user_data }
   end
 
   def create
@@ -13,7 +14,10 @@ class UsersController < ApplicationController
     else
       Rails.logger.info "██ >> Sign up failed"
       Rails.logger.info @user.errors.inspect
-      redirect_to new_user_path
+      render inertia: "users/signup", props: {
+        user: user_params,
+        errors: @user.errors
+      }
     end
   end
 
