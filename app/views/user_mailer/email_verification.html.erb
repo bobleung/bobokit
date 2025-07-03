@@ -16,7 +16,7 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Welcome to myLocums!</h1>
+      <h1>Welcome to <%= ENV['APP_NAME'] || 'myApp' %>!</h1>
     </div>
     
     <div class="content">
@@ -33,7 +33,7 @@
       
       <p>If you didn't create an account, please ignore this email.</p>
       
-      <p>Best regards,<br>The myLocums Team</p>
+      <p>Best regards,<br>The <%= ENV['APP_NAME'] || 'myApp' %> Team</p>
     </div>
     
     <div class="footer">
