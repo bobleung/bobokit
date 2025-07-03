@@ -1,59 +1,68 @@
 <script>
-  export let user = null;
+  import { Link } from '@inertiajs/svelte';
   
-  $: isAuthenticated = !!user;
-  $: userFirstName = user?.first_name;
+  let { user = null } = $props();
+  
+  const isAuthenticated = $derived(!!user);
+  const userFirstName = $derived(user?.first_name);
 </script>
 
 <div class="navbar bg-base-100 shadow-sm">
+  <!-- Brand/Logo - always on left -->
   <div class="navbar-start">
+    <!-- Mobile menu button - only show when authenticated -->
     {#if isAuthenticated}
       <div class="dropdown">
-        <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
-          </svg>
+        <button class="btn btn-ghost lg:hidden" aria-label="Open mobile menu">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <div class="dropdown-content menu bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+          <ul>
+            <li><Link href="/bookings">Bookings</Link></li>
+            <li><Link href="/invoices">Invoices</Link></li>
+          </ul>
         </div>
-        <ul
-          tabindex="0"
-          class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-          <li><a href="/bookings">Bookings</a></li>
-          <li><a href="/invoices">Invoices</a></li>
-          <li class="border-t border-base-300 mt-2 pt-2">
-            <a href="/profile">Profile</a>
-          </li>
-          <li><a href="/logout">Log Out</a></li>
-        </ul>
       </div>
     {/if}
-    <a class="btn btn-ghost text-xl" href="/">myLocums</a>
+    <Link href="/" class="btn btn-ghost text-xl">myLocums</Link>
   </div>
+
+  <!-- Desktop center menu - only show navigation items when authenticated -->
   <div class="navbar-center hidden lg:flex">
     {#if isAuthenticated}
       <ul class="menu menu-horizontal px-1">
-        <li><a href="/bookings">Bookings</a></li>
-        <li><a href="/invoices">Invoices</a></li>
+        <li><Link href="/bookings">Bookings</Link></li>
+        <li><Link href="/invoices">Invoices</Link></li>
       </ul>
     {/if}
   </div>
+
+  <!-- Right side - user dropdown (desktop) or login button -->
   <div class="navbar-end">
     {#if isAuthenticated}
+      <!-- Desktop user dropdown - visible on all screen sizes when authenticated -->
       <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button" class="btn btn-ghost">
-          {userFirstName}
+        <button class="btn btn-ghost" aria-label="User menu">
+          <span class="hidden sm:inline">{userFirstName}</span>
+          <span class="sm:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </span>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
+        </button>
+        <div class="dropdown-content menu bg-base-100 rounded-box z-[1] mt-3 w-32 p-2 shadow">
+          <ul>
+            <li><Link href="/profile">Profile</Link></li>
+            <li><Link href="/logout">Log Out</Link></li>
+          </ul>
         </div>
-        <ul
-          tabindex="0"
-          class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-32 p-2 shadow">
-          <li><a href="/profile">Profile</a></li>
-          <li><a href="/logout">Log Out</a></li>
-        </ul>
       </div>
     {:else}
-      <a class="btn btn-primary" href="/login">Login</a>
+      <!-- Login button - shown when not authenticated -->
+      <Link href="/login" class="btn btn-primary">Login</Link>
     {/if}
   </div>
 </div>
