@@ -5,10 +5,10 @@
   let { children, user } = $props();
 </script>
 
-<div class="min-h-screen bg-base-100">
+<div class="min-h-screen bg-base-100 flex flex-col">
   <Navbar {user} />
   <Flash />
-  <main>
+  <main class="flex-1">
     {@render children()}
   </main>
 </div>

@@ -16,7 +16,8 @@
     }
 </script>
 
-<div class="min-h-screen flex items-center justify-center">
+
+    <div class="min-h-[calc(100vh-4rem)] flex items-center justify-center">
     <form onsubmit={handleSubmit}>
         <div class="card w-96 bg-base-200 card-lg shadow-sm">
             <div class="card-body flex flex-col gap-4">
