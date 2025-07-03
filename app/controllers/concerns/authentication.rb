@@ -3,12 +3,17 @@ module Authentication
 
   included do
     before_action :require_authentication
+    before_action :require_email_verification
     helper_method :authenticated?
   end
 
   class_methods do
     def allow_unauthenticated_access(**options)
       skip_before_action :require_authentication, **options
+    end
+    
+    def allow_unverified_access(**options)
+      skip_before_action :require_email_verification, **options
     end
   end
 
@@ -22,6 +27,8 @@ module Authentication
     end
     
     def require_email_verification
+      return unless Rails.application.config.require_email_verification
+      
       if Current.user && !Current.user.email_verified?
         redirect_to email_verification_path
       end

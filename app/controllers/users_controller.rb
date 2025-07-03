@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   allow_unauthenticated_access only: %i[ new create ]
+  allow_unverified_access only: %i[ profile update_profile ]
 
   def new
     user_data = params[:user] || {}
