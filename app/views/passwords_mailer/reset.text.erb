@@ -1,2 +1,19 @@
-You can reset your password within the next 15 minutes on this password reset page:
+Reset Your Password
+
+Hi <%= @user.first_name %>,
+
+We received a request to reset your password for your <%= ENV['APP_NAME'] || 'myLocums' %> account.
+
+Click the link below to reset your password:
+
 <%= edit_password_url(@user.password_reset_token) %>
+
+This password reset link will expire in 15 minutes.
+
+If you didn't request a password reset, please ignore this email. Your password will remain unchanged.
+
+Best regards,
+The <%= ENV['APP_NAME'] || 'myLocums' %> Team
+
+---
+This is an automated email. Please do not reply.

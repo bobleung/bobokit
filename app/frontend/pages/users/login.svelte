@@ -59,6 +59,7 @@
                 <div class="flex flex-col items-end gap-2">
                     <button type="submit" class="btn btn-primary">Login</button>
                     <p>No Account? <Link href="/signup" class="link">Sign up here.</Link></p>
+                    <p><Link href="/passwords/new" class="link">Forgot your password?</Link></p>
                 </div>
             </div>
         </div>

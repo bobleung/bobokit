@@ -1,8 +1,10 @@
 class PasswordsController < ApplicationController
   allow_unauthenticated_access
+  allow_unverified_access
   before_action :set_user_by_token, only: %i[ edit update ]
 
   def new
+    render inertia: "passwords/new"
   end
 
   def create
@@ -14,6 +16,7 @@ class PasswordsController < ApplicationController
   end
 
   def edit
+    render inertia: "passwords/edit", props: { token: params[:token] }
   end
 
   def update
