@@ -1,5 +1,5 @@
 class EmailVerificationsController < ApplicationController
-  allow_unauthenticated_access only: %i[ verify show resend ]
+  allow_unverified_access only: %i[ verify show resend ]
 
   def show
     render inertia: "email_verification/show"
@@ -7,7 +7,7 @@ class EmailVerificationsController < ApplicationController
 
   def verify
     @user = User.find_by(verification_token: params[:token])
-    
+
     if @user&.verification_token_valid?
       @user.verify_email!
       start_new_session_for @user
