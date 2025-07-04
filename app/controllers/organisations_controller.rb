@@ -1,4 +1,5 @@
 class OrganisationsController < ApplicationController
+  before_action :find_organisation, only: [:show, :edit, :update, :invite_member, :remove_member, :change_member_role]
   def new
     render inertia: "organisations/new", props: {
       organisation_types: [ "Agency", "Client", "Locum" ]
@@ -35,8 +36,6 @@ class OrganisationsController < ApplicationController
   end
 
   def show
-    @organisation = Organisation.find(params[:id])
-
     # Check if user has access to this organisation
     membership = Current.user.memberships.find_by(entity: @organisation)
 
@@ -54,8 +53,6 @@ class OrganisationsController < ApplicationController
   end
 
   def edit
-    @organisation = Organisation.find(params[:id])
-
     # Check if user has access to this organisation
     membership = Current.user.memberships.find_by(entity: @organisation)
 
@@ -73,8 +70,6 @@ class OrganisationsController < ApplicationController
   end
 
   def update
-    @organisation = Organisation.find(params[:id])
-
     # Check if user has access to this organisation
     membership = Current.user.memberships.find_by(entity: @organisation)
 
@@ -100,8 +95,6 @@ class OrganisationsController < ApplicationController
   end
   
   def invite_member
-    @organisation = Organisation.find(params[:id])
-    
     # Check if user has permission to invite
     membership = Current.user.memberships.accepted.find_by(entity: @organisation)
     
@@ -124,8 +117,6 @@ class OrganisationsController < ApplicationController
   end
   
   def remove_member
-    @organisation = Organisation.find(params[:id])
-    
     # Check if user has permission to remove members
     membership = Current.user.memberships.accepted.find_by(entity: @organisation)
     
@@ -167,8 +158,6 @@ class OrganisationsController < ApplicationController
   end
   
   def change_member_role
-    @organisation = Organisation.find(params[:id])
-    
     # Check if user has permission to change roles
     membership = Current.user.memberships.accepted.find_by(entity: @organisation)
     
@@ -212,5 +201,14 @@ class OrganisationsController < ApplicationController
     end
     
     redirect_to organisation_path(@organisation)
+  end
+  
+  private
+  
+  def find_organisation
+    @organisation = Organisation.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    flash[:error] = "Organisation not found"
+    redirect_to root_path
   end
 end
