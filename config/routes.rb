@@ -31,5 +31,9 @@ Rails.application.routes.draw do
   post "user/switch_context", to: "user_context#switch_context"
   
   # Organisations
-  resources :organisations, only: [:new, :create, :show, :edit, :update]
+  resources :organisations, only: [:new, :create, :show, :edit, :update] do
+    member do
+      post :invite_member
+    end
+  end
 end

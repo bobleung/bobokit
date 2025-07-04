@@ -83,5 +83,5 @@ Rails.application.configure do
   # config.generators.apply_rubocop_autocorrect_after_generate!
 
   # Allow login without email verification in development
-  config.require_email_verification = true
+  config.require_email_verification = false
 end

@@ -45,7 +45,11 @@ class User < ApplicationRecord
   end
   
   def available_entities
-    memberships.active.includes(:entity).map(&:entity)
+    memberships.accepted.includes(:entity).map(&:entity)
+  end
+  
+  def pending_invites
+    memberships.pending.includes(:entity)
   end
   
   def create_context(entity_id = nil)
@@ -54,5 +58,18 @@ class User < ApplicationRecord
   
   def super_admin?
     super_admin == true
+  end
+  
+  def link_pending_invites!
+    # Find all pending invites for this user's email
+    pending = Membership.pending.for_email(email_address)
+    
+    # Link them to this user and mark as accepted (they can decline later if needed)
+    pending.update_all(
+      user_id: id,
+      invited_email: nil
+    )
+    
+    pending.count
   end
 end

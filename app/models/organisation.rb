@@ -7,24 +7,29 @@ class Organisation < ApplicationRecord
   validates :name, presence: true
   validates :type, presence: true
   validates :type, inclusion: { in: %w[Agency Client Locum] }
-  
-  scope :agencies, -> { where(type: 'Agency') }
-  scope :clients, -> { where(type: 'Client') }
-  scope :locums, -> { where(type: 'Locum') }
-  
+
+  scope :agencies, -> { where(type: "Agency") }
+  scope :clients, -> { where(type: "Client") }
+  scope :locums, -> { where(type: "Locum") }
+
   def display_name
     "#{name} (#{type})"
   end
-  
+
   def agency?
-    type == 'Agency'
+    type == "Agency"
   end
-  
+
   def client?
-    type == 'Client'
+    type == "Client"
   end
-  
+
   def locum?
-    type == 'Locum'
+    type == "Locum"
+  end
+
+  # Specifically added because STI tables automatically omit "type" by default.
+  def as_json(options = {})
+    super(options).merge(type: type)
   end
 end

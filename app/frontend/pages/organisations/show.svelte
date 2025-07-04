@@ -1,5 +1,5 @@
 <script>
-  import { Link } from '@inertiajs/svelte';
+  import { Link, router } from '@inertiajs/svelte';
 
   let { organisation = {}, membership = {}, members = [] } = $props();
   
@@ -7,6 +7,10 @@
   console.log("Org prop", organisation)
   console.log("Membership prop", membership)
   console.log("members prop", members)
+  
+  let showInviteForm = $state(false);
+  let inviteEmail = $state('');
+  let inviteRole = $state('member');
 
   // Entity type to icon mapping
   const ENTITY_ICONS = {
@@ -24,6 +28,32 @@
     (membership.role === 'admin' || membership.role === 'owner') && 
     organisation.type !== 'Locum'
   );
+  
+  function handleInviteSubmit(event) {
+    event.preventDefault();
+    
+    if (!inviteEmail.trim()) {
+      return;
+    }
+    
+    router.post(`/organisations/${organisation.id}/invite_member`, {
+      email: inviteEmail,
+      role: inviteRole
+    });
+    
+    // Reset form
+    inviteEmail = '';
+    inviteRole = 'member';
+    showInviteForm = false;
+  }
+  
+  function toggleInviteForm() {
+    showInviteForm = !showInviteForm;
+    if (!showInviteForm) {
+      inviteEmail = '';
+      inviteRole = 'member';
+    }
+  }
 </script>
 
 <div class="min-h-[calc(100vh-4rem)] p-4">
@@ -68,12 +98,43 @@
           </div>
           
           {#if canManageUsers}
-            <button class="btn btn-primary btn-sm">
+            <button class="btn btn-primary btn-sm" onclick={toggleInviteForm}>
               <span class="material-symbols-outlined">person_add</span>
-              Add Member
+              {showInviteForm ? 'Cancel' : 'Add Member'}
             </button>
           {/if}
         </div>
+        
+        <!-- Invitation Form -->
+        {#if showInviteForm}
+          <form onsubmit={handleInviteSubmit} class="bg-base-300 p-4 rounded-lg mb-4">
+            <h3 class="font-semibold mb-3">Invite New Member</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div class="md:col-span-2">
+                <input
+                  type="email"
+                  class="input input-bordered w-full"
+                  placeholder="Enter email address"
+                  bind:value={inviteEmail}
+                  required
+                />
+              </div>
+              <select class="select select-bordered" bind:value={inviteRole}>
+                <option value="member">Member</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div class="flex gap-2 mt-3">
+              <button type="submit" class="btn btn-primary btn-sm" disabled={!inviteEmail.trim()}>
+                <span class="material-symbols-outlined">send</span>
+                Send Invitation
+              </button>
+              <button type="button" class="btn btn-ghost btn-sm" onclick={toggleInviteForm}>
+                Cancel
+              </button>
+            </div>
+          </form>
+        {/if}
         
         {#if members.length > 0}
           <div class="space-y-3">
@@ -82,17 +143,24 @@
                 <div class="flex items-center gap-3">
                   <div class="avatar placeholder">
                     <div class="bg-neutral text-neutral-content rounded-full w-10 h-10 flex items-center justify-center">
-                      <span class="text-xs font-medium">
-                        {member.user.first_name.charAt(0)}{member.user.last_name.charAt(0)}
-                      </span>
+                      {#if member.pending_invite}
+                        <span class="material-symbols-outlined text-sm">mail</span>
+                      {:else}
+                        <span class="text-xs font-medium">
+                          {member.user.first_name.charAt(0)}{member.user.last_name.charAt(0)}
+                        </span>
+                      {/if}
                     </div>
                   </div>
                   <div>
                     <div class="font-medium">
-                      {member.user.first_name} {member.user.last_name}
+                      {member.display_name}
                     </div>
                     <div class="text-sm opacity-70">
-                      {member.user.email_address}
+                      {member.display_email}
+                      {#if member.pending_invite}
+                        <span class="badge badge-warning badge-xs ml-2">Pending</span>
+                      {/if}
                     </div>
                   </div>
                 </div>
@@ -101,11 +169,8 @@
                   <div class="badge" class:badge-primary={member.role === 'owner'} class:badge-secondary={member.role === 'admin'} class:badge-ghost={member.role === 'member'}>
                     {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
                   </div>
-                  {#if !member.active}
-                    <div class="badge badge-error">Inactive</div>
-                  {/if}
                   
-                  {#if canManageUsers && member.role !== 'owner'}
+                  {#if canManageUsers && member.role !== 'owner' && !member.pending_invite}
                     <div class="dropdown dropdown-end">
                       <button class="btn btn-ghost btn-xs" aria-label="Member actions">
                         <span class="material-symbols-outlined text-sm">more_vert</span>
@@ -129,11 +194,16 @@
                         <li>
                           <button class="text-sm text-error">
                             <span class="material-symbols-outlined text-sm">person_remove</span>
-                            Remove Member
+                            {member.pending_invite ? 'Cancel Invitation' : 'Remove Member'}
                           </button>
                         </li>
                       </ul>
                     </div>
+                  {:else if canManageUsers && member.pending_invite}
+                    <button class="btn btn-ghost btn-xs text-error">
+                      <span class="material-symbols-outlined text-sm">cancel</span>
+                      Cancel Invite
+                    </button>
                   {/if}
                 </div>
               </div>
@@ -176,11 +246,6 @@
           <li>• Activity history and audit logs</li>
           <li>• Integration settings and API access</li>
         </ul>
-        
-        <Link href="/" class="btn btn-primary">
-          <span class="material-symbols-outlined">dashboard</span>
-          Go to Dashboard
-        </Link>
       </div>
     </div>
   </div>

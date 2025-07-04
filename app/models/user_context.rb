@@ -12,11 +12,11 @@ class UserContext
     return unless @current_user
     
     if entity_id
-      @current_membership = @current_user.memberships.active.find_by(entity_id: entity_id)
+      @current_membership = @current_user.memberships.accepted.find_by(entity_id: entity_id)
       @current_entity = @current_membership&.entity
     else
       # Default to first available entity
-      @current_membership = @current_user.memberships.active.first
+      @current_membership = @current_user.memberships.accepted.first
       @current_entity = @current_membership&.entity
     end
   end
@@ -33,7 +33,7 @@ class UserContext
   def available_entities
     return [] unless @current_user
     
-    @current_user.memberships.active.includes(:entity).map(&:entity)
+    @current_user.memberships.accepted.includes(:entity).map(&:entity)
   end
   
   def can_manage_users?

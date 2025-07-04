@@ -10,15 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_04_113849) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_04_135533) do
   create_table "memberships", force: :cascade do |t|
-    t.integer "user_id", null: false
+    t.integer "user_id"
     t.integer "entity_id", null: false
     t.integer "role", default: 0
-    t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "invited_email"
+    t.boolean "invite_accepted", default: false
     t.index ["entity_id"], name: "index_memberships_on_entity_id"
+    t.index ["invited_email"], name: "index_memberships_on_invited_email"
     t.index ["user_id", "entity_id"], name: "index_memberships_on_user_id_and_entity_id", unique: true
     t.index ["user_id"], name: "index_memberships_on_user_id"
   end
