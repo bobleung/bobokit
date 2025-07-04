@@ -1,9 +1,21 @@
 <script>
   import { router } from '@inertiajs/svelte';
   
-  let { currentEntity = null, availableEntities = [], userContext = null } = $props();
+  // Entity type to icon mapping
+  const ENTITY_ICONS = {
+    Agency: 'handshake',
+    Client: 'home_health',
+    default: 'person'
+  };
+  
+  let { currentEntity = null, availableEntities = [] } = $props();
   
   let dropdownOpen = $state(false);
+  
+  // Get icon for entity type
+  function getEntityIcon(type) {
+    return ENTITY_ICONS[type] || ENTITY_ICONS.default;
+  }
   
   function handleEntitySwitch(entityId) {
     dropdownOpen = false;
@@ -16,6 +28,13 @@
   
   function closeDropdown() {
     dropdownOpen = false;
+  }
+  
+  function goToEntityProfile() {
+    if (currentEntity) {
+      dropdownOpen = false;
+      router.visit(`/organisations/${currentEntity.id}`);
+    }
   }
 </script>
 
@@ -30,7 +49,7 @@
     {#if currentEntity}
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-sm">
-          {#if currentEntity.type === 'Agency'}business{:else if currentEntity.type === 'Client'}corporate_fare{:else}person{/if}
+          {getEntityIcon(currentEntity.type)}
         </span>
         <div class="flex flex-col items-start">
           <span class="text-sm font-medium">{currentEntity.name}</span>
@@ -41,9 +60,28 @@
       <span class="text-sm">Select Entity</span>
     {/if}
     <span class="material-symbols-outlined text-sm">expand_more</span>
-  </div>
+    </div>
   
-  <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-[1] w-64 p-2 shadow-lg">
+  <ul class="dropdown-content menu bg-base-100 rounded-box z-[1] mt-4 w-64 p-2 shadow-lg">
+    <!-- Current Entity Management -->
+    {#if currentEntity}
+      <li>
+        <button
+          class="flex items-center gap-3 p-3 hover:bg-base-300"
+          onclick={goToEntityProfile}
+        >
+          <span class="material-symbols-outlined">settings</span>
+          <div class="flex flex-col items-start">
+            <span class="font-medium">Manage {currentEntity.name}</span>
+            <span class="text-xs opacity-70">View and edit settings</span>
+          </div>
+        </button>
+      </li>
+      
+      <div class="divider my-1">Switch Entity</div>
+    {/if}
+    
+    <!-- Available Entities List -->
     {#each availableEntities as entity}
       <li>
         <button
@@ -52,7 +90,7 @@
           onclick={() => handleEntitySwitch(entity.id)}
         >
           <span class="material-symbols-outlined">
-            {#if entity.type === 'Agency'}business{:else if entity.type === 'Client'}corporate_fare{:else}person{/if}
+            {getEntityIcon(entity.type)}
           </span>
           <div class="flex flex-col items-start">
             <span class="font-medium">{entity.name}</span>

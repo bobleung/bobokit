@@ -182,3 +182,6 @@ app/
 ### Email Verification and Access Control
 - Added email verification flow to enhance user authentication
 - Implemented `allow_unverified_access` helper method to manage user access based on email verification status
+
+### Inertia Props Passing
+- Passing props to inertia in controllers doesn't need .as_json, it can be as pure Ruby object. Default to this.

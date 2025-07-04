@@ -2,7 +2,7 @@
   import { Link } from '@inertiajs/svelte';
   import EntitySwitcher from './EntitySwitcher.svelte';
   
-  let { user = null, currentEntity = null, availableEntities = [], userContext = null } = $props();
+  let { user = null, currentEntity = null, availableEntities = [] } = $props();
   
   const isAuthenticated = $derived(!!user);
   const userFirstName = $derived(user?.first_name);
@@ -42,7 +42,7 @@
   <div class="navbar-end gap-2">
     {#if isAuthenticated}
       <!-- Entity Switcher -->
-      <EntitySwitcher {currentEntity} {availableEntities} {userContext} />
+      <EntitySwitcher {currentEntity} {availableEntities} />
       <!-- Desktop user dropdown - visible on all screen sizes when authenticated -->
       <div class="dropdown dropdown-end">
         <button class="btn btn-ghost" aria-label="User menu">
@@ -52,11 +52,9 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
+          <span class="material-symbols-outlined">keyboard_arrow_down</span>
         </button>
-        <div class="dropdown-content menu bg-base-100 rounded-box z-[1] mt-3 w-32 p-2 shadow">
+        <div class="dropdown-content menu bg-base-100 rounded-box z-[1] mt-3 w-32 p-2 shadow-lg">
           <ul>
             <li><Link href="/profile">Profile</Link></li>
             <li><Link href="/logout">Log Out</Link></li>
