@@ -93,25 +93,6 @@
 
 <div class="min-h-[calc(100vh-4rem)] p-4">
   <div class="max-w-4xl mx-auto">
-    <!-- Test DaisyUI Avatar -->
-    <div class="mb-4 p-4 bg-base-100 rounded-lg">
-      <h3 class="text-lg font-bold mb-4">DaisyUI Avatar Test:</h3>
-      <div class="flex gap-4 items-center">
-        <!-- DaisyUI avatar placeholder -->
-        <div class="avatar avatar-placeholder">
-          <div class="bg-neutral text-neutral-content rounded-full w-10">
-            <span>AA</span>
-          </div>
-        </div>
-        
-        <!-- Current broken approach for comparison -->
-        <div class="avatar avatar-placeholder">
-          <div class="bg-neutral text-neutral-content rounded-full w-10 h-10 flex items-center justify-center">
-            <div class="text-xl font-medium">BB</div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Header -->
     <div class="card bg-base-200 shadow-sm mb-6">
