@@ -62,6 +62,13 @@ class OrganisationsController < ApplicationController
       redirect_to root_path
       return
     end
+    
+    # Check if user has permission to edit organisation
+    unless membership.role == 'admin' || membership.role == 'owner'
+      flash[:error] = "You don't have permission to edit this organisation"
+      redirect_to organisation_path(@organisation)
+      return
+    end
 
     render inertia: "organisations/edit", props: {
       organisation: @organisation,
@@ -78,6 +85,13 @@ class OrganisationsController < ApplicationController
     unless membership
       flash[:error] = "You don't have access to that organisation"
       redirect_to root_path
+      return
+    end
+    
+    # Check if user has permission to edit organisation
+    unless membership.role == 'admin' || membership.role == 'owner'
+      flash[:error] = "You don't have permission to edit this organisation"
+      redirect_to organisation_path(@organisation)
       return
     end
 
@@ -122,13 +136,7 @@ class OrganisationsController < ApplicationController
     # Check if user has permission to remove members
     membership = Current.user.memberships.accepted.find_by(entity: @organisation)
     
-    unless membership&.can_manage_users?
-      flash[:error] = "You don't have permission to remove members"
-      redirect_to organisation_path(@organisation)
-      return
-    end
-    
-    # Find the member to remove
+    # Find the member to remove first
     member_to_remove = @organisation.memberships.find_by(id: params[:member_id])
     
     unless member_to_remove
@@ -137,12 +145,23 @@ class OrganisationsController < ApplicationController
       return
     end
     
+    # Allow if user can manage users OR if they're removing themselves
+    can_remove = membership&.can_manage_users? || (member_to_remove.user == Current.user)
+    
+    unless can_remove
+      flash[:error] = "You don't have permission to remove members"
+      redirect_to organisation_path(@organisation)
+      return
+    end
+    
     # Check if member can be removed
     unless member_to_remove.can_be_removed_by?(Current.user)
       if member_to_remove.role == 'owner'
         flash[:error] = "Cannot remove the organisation owner"
+      elsif member_to_remove.user == Current.user && member_to_remove.role == 'admin'
+        flash[:error] = "Admins cannot remove themselves from the organisation"
       else
-        flash[:error] = "Cannot remove yourself from the organisation"
+        flash[:error] = "You don't have permission to remove this member"
       end
       redirect_to organisation_path(@organisation)
       return

@@ -56,7 +56,12 @@ class Membership < ApplicationRecord
   
   def can_be_removed_by?(user)
     return false if role == 'owner'
-    return false if self.user == user
+    
+    # Allow members to remove themselves, but not admins
+    if self.user == user
+      return role == 'member'
+    end
+    
     true
   end
   

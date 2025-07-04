@@ -29,6 +29,16 @@
     organisation.type !== 'Locum'
   );
   
+  // Check if current user can edit organisation
+  const canEditOrganisation = $derived(
+    membership.role === 'admin' || membership.role === 'owner'
+  );
+  
+  // Check if current user can leave organisation (members only, not owners)
+  const canLeaveOrganisation = $derived(
+    membership.role === 'member'
+  );
+  
   function handleInviteSubmit(event) {
     event.preventDefault();
     
@@ -68,6 +78,16 @@
       member_id: memberId,
       role: newRole
     });
+  }
+  
+  function handleLeaveOrganisation() {
+    const confirmMessage = `Are you sure you want to leave "${organisation.name}"? You will lose access to this organisation and will need to be re-invited to rejoin.`;
+    
+    if (confirm(confirmMessage)) {
+      router.delete(`/organisations/${organisation.id}/remove_member`, {
+        data: { member_id: membership.id }
+      });
+    }
   }
 </script>
 
@@ -117,10 +137,19 @@
           </div>
           
           <div class="flex gap-2">
-            <Link href="/organisations/{organisation.id}/edit" class="btn btn-outline">
-              <span class="material-symbols-outlined">edit</span>
-              Edit Organisation
-            </Link>
+            {#if canEditOrganisation}
+              <Link href="/organisations/{organisation.id}/edit" class="btn btn-outline">
+                <span class="material-symbols-outlined">edit</span>
+                Edit Organisation
+              </Link>
+            {/if}
+            
+            {#if canLeaveOrganisation}
+              <button class="btn btn-error btn-outline" onclick={handleLeaveOrganisation}>
+                <span class="material-symbols-outlined">logout</span>
+                Leave Organisation
+              </button>
+            {/if}
           </div>
         </div>
       </div>
