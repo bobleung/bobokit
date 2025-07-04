@@ -18,7 +18,8 @@ class OrganisationsController < ApplicationController
       Membership.create!(
         user: Current.user,
         entity: @organisation,
-        role: :owner
+        role: :owner,
+        invite_accepted: true
       )
 
       # Switch to the new organisation
