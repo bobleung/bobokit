@@ -56,15 +56,15 @@
       <div class="card bg-base-200 shadow-sm">
         <div class="card-body">
           <div class="text-center mb-6">
-            <div class="avatar placeholder mb-4">
-              <div class="bg-primary text-primary-content rounded-full w-16">
-                <span class="material-symbols-outlined text-2xl">
+            <div class="avatar avatar-placeholder mb-4">
+              <div class="bg-accent text-primary-content rounded-full w-16">
+                <span class="material-symbols-outlined" style="font-size: 2.5rem">
                   {getEntityIcon(organisation.type)}
                 </span>
               </div>
             </div>
             <h2 class="card-title justify-center text-2xl mb-2">
-              Edit {organisation.name}
+              {organisation.name}
             </h2>
             <p class="text-base-content/70">
               Update your {organisation.type.toLowerCase()} information
@@ -191,26 +191,26 @@
           <div class="divider">Address</div>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="form-control md:col-span-2">
+            <div class="form-control">
               <label class="label">
                 <span class="label-text">Address Line 1</span>
               </label>
               <input
                 type="text"
                 class="input input-bordered"
-                placeholder="Street address"
+                placeholder="House number and street name"
                 bind:value={address_line1}
               />
             </div>
 
-            <div class="form-control md:col-span-2">
+            <div class="form-control">
               <label class="label">
                 <span class="label-text">Address Line 2</span>
               </label>
               <input
                 type="text"
                 class="input input-bordered"
-                placeholder="Apartment, suite, etc. (optional)"
+                placeholder="Flat, building, etc. (optional)"
                 bind:value={address_line2}
               />
             </div>
@@ -266,16 +266,16 @@
           </div>
 
           <!-- Notes -->
-          <div class="form-control">
-            <label class="label">
+          <fieldset class="form-control">
+            <legend class="label">
               <span class="label-text">Notes</span>
-            </label>
+            </legend>
             <textarea
-              class="textarea textarea-bordered"
+              class="textarea textarea-bordered h-24"
               placeholder="Additional information (optional)"
               bind:value={note}
             ></textarea>
-          </div>
+          </fieldset>
 
           <div class="flex flex-col sm:flex-row gap-3 mt-6">
             <button type="submit" class="btn btn-primary flex-1">
