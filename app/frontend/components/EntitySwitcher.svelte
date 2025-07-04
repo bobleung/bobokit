@@ -1,5 +1,6 @@
 <script>
   import { router } from '@inertiajs/svelte';
+  import { Link } from '@inertiajs/svelte';
   
   // Entity type to icon mapping
   const ENTITY_ICONS = {
@@ -8,7 +9,7 @@
     default: 'person'
   };
   
-  let { currentEntity = null, availableEntities = [], pendingInvites = [] } = $props();
+  let { currentEntity = null, availableEntities = [], pendingInvites = [], user = null } = $props();
   
   let dropdownOpen = $state(false);
   
@@ -16,6 +17,15 @@
   function getEntityIcon(type) {
     return ENTITY_ICONS[type] || ENTITY_ICONS.default;
   }
+  
+  // Generate display name: "Bob (Freshmedic Ltd)"
+  const displayName = $derived(
+    user && currentEntity 
+      ? `${user.first_name} (${currentEntity.name})`
+      : user 
+        ? user.first_name
+        : 'User'
+  );
   
   function handleEntitySwitch(entityId) {
     dropdownOpen = false;
@@ -48,7 +58,7 @@
   }
 </script>
 
-<div class="dropdown" class:dropdown-open={dropdownOpen}>
+<div class="dropdown dropdown-end" class:dropdown-open={dropdownOpen}>
   <div
     tabindex="0" 
     role="button" 
@@ -56,23 +66,36 @@
     onclick={toggleDropdown}
     onblur={closeDropdown}
   >
-    {#if currentEntity}
-      <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-sm">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-sm">
+        {#if currentEntity}
           {getEntityIcon(currentEntity.type)}
-        </span>
-        <div class="flex flex-col items-start">
-          <span class="text-sm font-medium">{currentEntity.name}</span>
-          <span class="text-xs opacity-70">{currentEntity.type}</span>
-        </div>
-      </div>
-    {:else}
-      <span class="text-sm">Select Entity</span>
-    {/if}
+        {:else}
+          person
+        {/if}
+      </span>
+      <span class="text-sm font-medium">{displayName}</span>
+    </div>
     <span class="material-symbols-outlined text-sm">expand_more</span>
     </div>
   
   <ul class="dropdown-content menu bg-base-100 rounded-box z-[1] mt-4 w-64 p-2 shadow-lg">
+    <!-- User Profile Options -->
+    <li>
+      <Link href="/profile" class="flex items-center gap-3 p-3">
+        <span class="material-symbols-outlined">person</span>
+        <span>Profile</span>
+      </Link>
+    </li>
+    <li>
+      <Link href="/logout" class="flex items-center gap-3 p-3">
+        <span class="material-symbols-outlined">logout</span>
+        <span>Log Out</span>
+      </Link>
+    </li>
+    
+    <div class="divider my-1"></div>
+    
     <!-- Current Entity Management -->
     {#if currentEntity}
       <li>
