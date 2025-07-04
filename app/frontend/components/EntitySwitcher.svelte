@@ -26,22 +26,20 @@
   );
   
   function handleEntitySwitch(entityId) {
+    document.activeElement.blur();
     router.post('/user/switch_context', { entity_id: entityId });
   }
   
-  function goToEntityProfile() {
-    if (currentEntity) {
-      router.visit(`/organisations/${currentEntity.id}`);
-    }
-  }
-  
   function acceptInvitation(inviteId) {
+    document.activeElement.blur();
     router.post(`/memberships/${inviteId}/accept`);
   }
   
   function declineInvitation(inviteId) {
+    document.activeElement.blur();
     router.post(`/memberships/${inviteId}/decline`);
   }
+  
 </script>
 
 <div class="dropdown dropdown-end">
@@ -63,16 +61,16 @@
     <span class="material-symbols-outlined text-sm">expand_more</span>
     </div>
   
-  <ul class="dropdown-content menu bg-base-100 rounded-box z-[1] mt-4 w-64 p-2 shadow-lg">
+  <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[1] mt-4 w-64 p-2 shadow-lg">
     <!-- User Profile Options -->
     <li>
-      <Link href="/profile" class="flex items-center gap-3 p-3">
+      <Link href="/profile" class="flex items-center gap-3 p-3" onclick={() => document.activeElement.blur()}>
         <span class="material-symbols-outlined">person</span>
         <span>Profile</span>
       </Link>
     </li>
     <li>
-      <Link href="/logout" class="flex items-center gap-3 p-3">
+      <Link href="/logout" class="flex items-center gap-3 p-3" onclick={() => document.activeElement.blur()}>
         <span class="material-symbols-outlined">logout</span>
         <span>Log Out</span>
       </Link>
@@ -83,16 +81,17 @@
     <!-- Current Entity Management -->
     {#if currentEntity}
       <li>
-        <button
+        <Link
+          href="/organisations/{currentEntity.id}"
           class="flex items-center gap-3 p-3"
-          onclick={goToEntityProfile}
+          onclick={() => document.activeElement.blur()}
         >
           <span class="material-symbols-outlined">settings</span>
           <div class="flex flex-col items-start">
             <span class="font-medium">Manage {currentEntity.name}</span>
             <span class="text-xs opacity-70">View and edit settings</span>
           </div>
-        </button>
+        </Link>
       </li>
       
       <div class="divider my-1">Switch Entity</div>
@@ -102,8 +101,7 @@
     {#each availableEntities as entity}
       <li>
         <button
-          class="flex items-center gap-3 p-3"
-          class:active={currentEntity?.id === entity.id}
+          class="flex items-center gap-3 p-3 {currentEntity?.id === entity.id ? 'active' : ''}"
           onclick={() => handleEntitySwitch(entity.id)}
         >
           <span class="material-symbols-outlined">
@@ -144,14 +142,14 @@
               </div>
             </div>
             <div class="flex gap-2">
-              <button 
+              <button
                 class="btn btn-success btn-xs flex-1"
                 onclick={() => acceptInvitation(invite.id)}
               >
                 <span class="material-symbols-outlined text-xs">check</span>
                 Accept
               </button>
-              <button 
+              <button
                 class="btn btn-error btn-xs flex-1"
                 onclick={() => declineInvitation(invite.id)}
               >
@@ -167,10 +165,10 @@
     <div class="divider my-1"></div>
     
     <li>
-      <a href="/organisations/new" class="flex items-center gap-3 p-3">
+      <Link href="/organisations/new" method="get" class="flex items-center gap-3 p-3" onclick={() => document.activeElement.blur()}>
         <span class="material-symbols-outlined">add</span>
         <span>Create New Entity</span>
-      </a>
+      </Link>
     </li>
   </ul>
 </div>

@@ -3,6 +3,7 @@ class UserContextController < ApplicationController
     entity_id = params[:entity_id]
 
     if switch_entity_context(entity_id)
+      Rails.logger.info "██ >> Switched Entity Success"
       flash[:success] = "Switched to #{@current_context.current_entity.display_name}"
       redirect_to root_path
       return
