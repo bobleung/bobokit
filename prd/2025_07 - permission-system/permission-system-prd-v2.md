@@ -140,7 +140,7 @@ memberships
 ├── id (bigint, primary key)
 ├── user_id (bigint, foreign key → users)
 ├── entity_id (bigint, foreign key → organisations)
-├── role (integer, default: 0) # enum: member, admin, owner (LocumProfile defaults to owner)
+├── role (integer, default: 0) # enum: member, admin, owner (Locum defaults to owner)
 ├── active (boolean, default: true)
 └── unique index on [user_id, entity_id]
 
@@ -175,7 +175,7 @@ users
 Organisation (STI base class)
 ├── Agency
 ├── Client
-└── LocumProfile
+└── Locum
 
 ApplicationPolicy (Pundit base)
 ├── JobPolicy
@@ -329,7 +329,7 @@ DELETE /api/jobs/:id/share/:entity_id # Revoke share
 
 ### 12.1 Glossary
 
-- **Entity:** An organisation (Agency, Client, or LocumProfile)
+- **Entity:** An organisation (Agency, Client, or Locum)
 - **Context:** The current entity a user is acting as
 - **Membership:** The relationship between a user and an entity
 - **Job Share:** Permission grant for an entity to access a job

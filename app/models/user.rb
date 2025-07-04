@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
+  has_many :memberships, dependent: :destroy
+  has_many :organisations, through: :memberships, source: :entity
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   validates :email_address, uniqueness: true
@@ -15,7 +17,8 @@ class User < ApplicationRecord
       email_address: email_address,
       first_name: first_name,
       last_name: last_name,
-      email_verified: email_verified?
+      email_verified: email_verified?,
+      super_admin: super_admin?
     }
   end
 
@@ -39,5 +42,17 @@ class User < ApplicationRecord
 
   def verification_token_valid?
     verification_token.present? && verification_token_expires_at > Time.current
+  end
+  
+  def available_entities
+    memberships.active.includes(:entity).map(&:entity)
+  end
+  
+  def create_context(entity_id = nil)
+    UserContext.new(self, entity_id)
+  end
+  
+  def super_admin?
+    super_admin == true
   end
 end

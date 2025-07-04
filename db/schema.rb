@@ -10,7 +10,41 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_03_201044) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_04_113849) do
+  create_table "memberships", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "entity_id", null: false
+    t.integer "role", default: 0
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["entity_id"], name: "index_memberships_on_entity_id"
+    t.index ["user_id", "entity_id"], name: "index_memberships_on_user_id_and_entity_id", unique: true
+    t.index ["user_id"], name: "index_memberships_on_user_id"
+  end
+
+  create_table "organisations", force: :cascade do |t|
+    t.string "type", null: false
+    t.string "name", null: false
+    t.string "email"
+    t.string "phone"
+    t.string "address_line1"
+    t.string "address_line2"
+    t.string "city"
+    t.string "county"
+    t.string "postcode"
+    t.string "country"
+    t.json "metadata"
+    t.integer "parent_id"
+    t.string "code_type"
+    t.string "code"
+    t.text "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["parent_id"], name: "index_organisations_on_parent_id"
+    t.index ["type"], name: "index_organisations_on_type"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "ip_address"
@@ -30,9 +64,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_03_201044) do
     t.datetime "email_verified_at"
     t.string "verification_token"
     t.datetime "verification_token_expires_at"
+    t.boolean "super_admin", default: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["verification_token"], name: "index_users_on_verification_token", unique: true
   end
 
+  add_foreign_key "memberships", "organisations", column: "entity_id"
+  add_foreign_key "memberships", "users"
+  add_foreign_key "organisations", "organisations", column: "parent_id"
   add_foreign_key "sessions", "users"
 end
