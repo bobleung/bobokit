@@ -8,6 +8,8 @@ class Organisation < ApplicationRecord
   validates :type, presence: true
   validates :type, inclusion: { in: %w[Agency Client Locum] }
 
+  scope :active, -> { where(active: true) }
+  scope :inactive, -> { where(active: false) }
   scope :agencies, -> { where(type: "Agency") }
   scope :clients, -> { where(type: "Client") }
   scope :locums, -> { where(type: "Locum") }

@@ -45,11 +45,11 @@ class User < ApplicationRecord
   end
   
   def available_entities
-    memberships.accepted.includes(:entity).map(&:entity)
+    memberships.accepted.joins(:entity).where(organisations: { active: true }).includes(:entity).map(&:entity)
   end
   
   def pending_invites
-    memberships.pending.includes(:entity)
+    memberships.pending.joins(:entity).where(organisations: { active: true }).includes(:entity)
   end
   
   def create_context(entity_id = nil)

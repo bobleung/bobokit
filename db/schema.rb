@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_04_135533) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_04_201709) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "entity_id", null: false
@@ -43,6 +43,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_04_135533) do
     t.text "note"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "active", default: true, null: false
     t.index ["parent_id"], name: "index_organisations_on_parent_id"
     t.index ["type"], name: "index_organisations_on_type"
   end

@@ -2,7 +2,7 @@
   import { router } from '@inertiajs/svelte';
   import { Link } from '@inertiajs/svelte';
 
-  let { organisation = {}, membership = {}, organisation_types = [], errors = {} } = $props();
+  let { organisation = {}, membership = {}, members = [], organisation_types = [], errors = {} } = $props();
   
   let name = $state(organisation.name || '');
   let email = $state(organisation.email || '');
@@ -47,6 +47,21 @@
   
   function getEntityIcon(type) {
     return ENTITY_ICONS[type] || ENTITY_ICONS.default;
+  }
+  
+  // Check if current user is owner and can deactivate
+  const isOwner = $derived(membership.role === 'owner');
+  const hasOtherMembers = $derived(members.length > 1);
+  const canDeactivate = $derived(isOwner && !hasOtherMembers);
+  
+  function handleDeactivate() {
+    if (!canDeactivate) return;
+    
+    const confirmMessage = `Are you sure you want to deactivate "${organisation.name}"? This will make it unavailable for new bookings and hide it from the organisation switcher. This action cannot be undone.`;
+    
+    if (confirm(confirmMessage)) {
+      router.patch(`/organisations/${organisation.id}/deactivate`);
+    }
   }
 </script>
 
@@ -289,5 +304,52 @@
         </div>
       </div>
     </form>
+
+    <!-- Deactivation Section -->
+    <div class="card bg-base-100 shadow-sm mt-6">
+      <div class="card-body">
+        <h3 class="text-lg font-semibold text-error mb-4">
+          <span class="material-symbols-outlined mr-2">warning</span>
+          Danger Zone
+        </h3>
+        
+        {#if isOwner}
+          {#if hasOtherMembers}
+            <div class="alert alert-warning mb-4">
+              <span class="material-symbols-outlined">group</span>
+              <div>
+                <p class="font-medium">Cannot Deactivate Organisation</p>
+                <p class="text-sm">You must remove all other members before deactivating this organisation. Only the owner can remain.</p>
+              </div>
+            </div>
+          {:else}
+            <div class="alert alert-error mb-4">
+              <span class="material-symbols-outlined">info</span>
+              <div>
+                <p class="font-medium">Deactivate Organisation</p>
+                <p class="text-sm">This will make the organisation unavailable for new bookings and hide it from the organisation switcher. Historical data will be preserved.</p>
+              </div>
+            </div>
+          {/if}
+          
+          <button 
+            class="btn btn-error"
+            disabled={!canDeactivate}
+            onclick={handleDeactivate}
+          >
+            <span class="material-symbols-outlined">block</span>
+            Deactivate Organisation
+          </button>
+        {:else}
+          <div class="alert alert-info">
+            <span class="material-symbols-outlined">info</span>
+            <div>
+              <p class="font-medium">Owner Access Required</p>
+              <p class="text-sm">Only organisation owners can deactivate an organisation. Contact your organisation owner if you need to deactivate this organisation.</p>
+            </div>
+          </div>
+        {/if}
+      </div>
+    </div>
   </div>
 </div>

@@ -1,5 +1,5 @@
 class OrganisationsController < ApplicationController
-  before_action :find_organisation, only: [:show, :edit, :update, :invite_member, :remove_member, :change_member_role]
+  before_action :find_organisation, only: [:show, :edit, :update, :invite_member, :remove_member, :change_member_role, :deactivate]
   def new
     render inertia: "organisations/new", props: {
       organisation_types: [ "Agency", "Client", "Locum" ]
@@ -65,6 +65,7 @@ class OrganisationsController < ApplicationController
     render inertia: "organisations/edit", props: {
       organisation: @organisation,
       membership: membership,
+      members: @organisation.members_data,
       organisation_types: [ "Agency", "Client", "Locum" ]
     }
   end
@@ -201,6 +202,46 @@ class OrganisationsController < ApplicationController
     end
     
     redirect_to organisation_path(@organisation)
+  end
+  
+  def deactivate
+    # Check if user is owner
+    membership = Current.user.memberships.accepted.find_by(entity: @organisation)
+    
+    unless membership&.role == 'owner'
+      flash[:error] = "Only organisation owners can deactivate an organisation"
+      redirect_to edit_organisation_path(@organisation)
+      return
+    end
+    
+    # Check if there are other members
+    other_members_count = @organisation.memberships.accepted.where.not(user: Current.user).count
+    
+    if other_members_count > 0
+      flash[:error] = "You must remove all other members before deactivating this organisation"
+      redirect_to edit_organisation_path(@organisation)
+      return
+    end
+    
+    # Check if organisation supports deactivation
+    unless @organisation.respond_to?(:active?)
+      flash[:error] = "This organisation type cannot be deactivated"
+      redirect_to edit_organisation_path(@organisation)
+      return
+    end
+    
+    # Deactivate the organisation
+    if @organisation.update(active: false)
+      flash[:success] = "#{@organisation.display_name} has been deactivated successfully"
+      
+      # Clear the current entity from session - user will have no context
+      session[:current_entity_id] = nil
+      
+      redirect_to root_path
+    else
+      flash[:error] = "Failed to deactivate organisation"
+      redirect_to edit_organisation_path(@organisation)
+    end
   end
   
   private

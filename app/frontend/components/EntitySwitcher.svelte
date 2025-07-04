@@ -8,8 +8,10 @@
     Client: 'home_health',
     default: 'person'
   };
-  
+
   let { currentEntity = null, availableEntities = [], pendingInvites = [], user = null } = $props();
+
+  $inspect("current entity mount: ", currentEntity)
   
   // Get icon for entity type
   function getEntityIcon(type) {
@@ -26,8 +28,10 @@
   );
   
   function handleEntitySwitch(entityId) {
+    console.log("current entity : ", currentEntity)
     document.activeElement.blur();
     router.post('/user/switch_context', { entity_id: entityId });
+    console.log("current entity after : ", currentEntity)
   }
   
   function acceptInvitation(inviteId) {
@@ -81,17 +85,19 @@
     <!-- Current Entity Management -->
     {#if currentEntity}
       <li>
-        <Link
-          href="/organisations/{currentEntity.id}"
-          class="flex items-center gap-3 p-3"
-          onclick={() => document.activeElement.blur()}
+        <button
+          class="flex items-center gap-3 p-3 w-full text-left hover:bg-base-200"
+          onclick={() => {
+            document.activeElement.blur();
+            router.get(`/organisations/${currentEntity.id}`);
+          }}
         >
           <span class="material-symbols-outlined">settings</span>
           <div class="flex flex-col items-start">
             <span class="font-medium">Manage {currentEntity.name}</span>
             <span class="text-xs opacity-70">View and edit settings</span>
           </div>
-        </Link>
+        </button>
       </li>
       
       <div class="divider my-1">Switch Entity</div>

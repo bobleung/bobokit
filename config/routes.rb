@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       post :invite_member
       delete :remove_member
       patch :change_member_role
+      patch :deactivate
     end
   end
   
