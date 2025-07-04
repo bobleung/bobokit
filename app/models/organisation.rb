@@ -32,4 +32,12 @@ class Organisation < ApplicationRecord
   def as_json(options = {})
     super(options).merge(type: type)
   end
+  
+  def can_have_members?
+    type != 'Locum'
+  end
+  
+  def members_data
+    memberships.includes(:user).map(&:display_data)
+  end
 end

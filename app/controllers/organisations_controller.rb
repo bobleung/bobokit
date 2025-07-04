@@ -49,17 +49,7 @@ class OrganisationsController < ApplicationController
     render inertia: "organisations/show", props: {
       organisation: @organisation,
       membership: membership,
-      members: @organisation.memberships.includes(:user).map do |m|
-        {
-          id: m.id,
-          role: m.role,
-          invite_accepted: m.invite_accepted,
-          pending_invite: m.pending_invite?,
-          display_name: m.display_name,
-          display_email: m.display_email,
-          user: m.user&.sanitised
-        }
-      end
+      members: @organisation.members_data
     }
   end
 
@@ -121,64 +111,13 @@ class OrganisationsController < ApplicationController
       return
     end
     
-    # Check if organisation type allows members
-    if @organisation.type == 'Locum'
-      flash[:error] = "Locum profiles cannot have additional members"
-      redirect_to organisation_path(@organisation)
-      return
-    end
+    # Use service to handle invitation logic
+    result = MemberInvitationService.call(@organisation, Current.user, params[:email], params[:role])
     
-    email = params[:email]&.strip&.downcase
-    role = params[:role] || 'member'
-    
-    if email.blank?
-      flash[:error] = "Email address is required"
-      redirect_to organisation_path(@organisation)
-      return
-    end
-    
-    # Check if user already exists and has membership
-    existing_user = User.find_by(email_address: email)
-    if existing_user
-      existing_membership = existing_user.memberships.find_by(entity: @organisation)
-      if existing_membership
-        if existing_membership.invite_accepted?
-          flash[:error] = "#{email} is already a member of this organisation"
-        else
-          flash[:error] = "#{email} already has a pending invitation"
-        end
-        redirect_to organisation_path(@organisation)
-        return
-      end
-    end
-    
-    # Check for existing pending invitation
-    existing_invite = Membership.pending.for_email(email).find_by(entity: @organisation)
-    if existing_invite
-      flash[:error] = "#{email} already has a pending invitation"
-      redirect_to organisation_path(@organisation)
-      return
-    end
-    
-    # Create the invitation
-    invitation = Membership.new(
-      entity: @organisation,
-      invited_email: email,
-      role: role,
-      invite_accepted: false
-    )
-    
-    if existing_user
-      # User exists, link them immediately but leave as pending for acceptance
-      invitation.user = existing_user
-      invitation.invited_email = nil
-    end
-    
-    if invitation.save
-      # TODO: Send invitation email
-      flash[:success] = "Invitation sent to #{email}"
+    if result.success?
+      flash[:success] = result.message
     else
-      flash[:error] = "Failed to send invitation: #{invitation.errors.full_messages.join(', ')}"
+      flash[:error] = result.message
     end
     
     redirect_to organisation_path(@organisation)
@@ -205,16 +144,13 @@ class OrganisationsController < ApplicationController
       return
     end
     
-    # Cannot remove owner
-    if member_to_remove.role == 'owner'
-      flash[:error] = "Cannot remove the organisation owner"
-      redirect_to organisation_path(@organisation)
-      return
-    end
-    
-    # Cannot remove yourself
-    if member_to_remove.user == Current.user
-      flash[:error] = "Cannot remove yourself from the organisation"
+    # Check if member can be removed
+    unless member_to_remove.can_be_removed_by?(Current.user)
+      if member_to_remove.role == 'owner'
+        flash[:error] = "Cannot remove the organisation owner"
+      else
+        flash[:error] = "Cannot remove yourself from the organisation"
+      end
       redirect_to organisation_path(@organisation)
       return
     end
@@ -253,23 +189,15 @@ class OrganisationsController < ApplicationController
     
     new_role = params[:role]
     
-    # Validate role
-    unless %w[member admin].include?(new_role)
-      flash[:error] = "Invalid role specified"
-      redirect_to organisation_path(@organisation)
-      return
-    end
-    
-    # Cannot change owner role
-    if member_to_update.role == 'owner'
-      flash[:error] = "Cannot change the organisation owner's role"
-      redirect_to organisation_path(@organisation)
-      return
-    end
-    
-    # Cannot change your own role
-    if member_to_update.user == Current.user
-      flash[:error] = "Cannot change your own role"
+    # Check if role can be changed
+    unless member_to_update.can_change_role_to?(new_role)
+      if member_to_update.role == 'owner'
+        flash[:error] = "Cannot change the organisation owner's role"
+      elsif member_to_update.user == Current.user
+        flash[:error] = "Cannot change your own role"
+      else
+        flash[:error] = "Invalid role specified"
+      end
       redirect_to organisation_path(@organisation)
       return
     end

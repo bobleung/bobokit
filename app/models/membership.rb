@@ -54,6 +54,29 @@ class Membership < ApplicationRecord
     end
   end
   
+  def can_be_removed_by?(user)
+    return false if role == 'owner'
+    return false if self.user == user
+    true
+  end
+  
+  def can_change_role_to?(new_role)
+    return false if role == 'owner'
+    %w[member admin].include?(new_role)
+  end
+  
+  def display_data
+    {
+      id: id,
+      role: role,
+      invite_accepted: invite_accepted,
+      pending_invite: pending_invite?,
+      display_name: display_name,
+      display_email: display_email,
+      user: user&.sanitised
+    }
+  end
+  
   private
   
   def user_or_email_present
