@@ -11,8 +11,6 @@
   
   let { currentEntity = null, availableEntities = [], pendingInvites = [], user = null } = $props();
   
-  let dropdownOpen = $state(false);
-  
   // Get icon for entity type
   function getEntityIcon(type) {
     return ENTITY_ICONS[type] || ENTITY_ICONS.default;
@@ -28,43 +26,29 @@
   );
   
   function handleEntitySwitch(entityId) {
-    dropdownOpen = false;
     router.post('/user/switch_context', { entity_id: entityId });
-  }
-  
-  function toggleDropdown() {
-    dropdownOpen = !dropdownOpen;
-  }
-  
-  function closeDropdown() {
-    dropdownOpen = false;
   }
   
   function goToEntityProfile() {
     if (currentEntity) {
-      dropdownOpen = false;
       router.visit(`/organisations/${currentEntity.id}`);
     }
   }
   
   function acceptInvitation(inviteId) {
-    dropdownOpen = false;
     router.post(`/memberships/${inviteId}/accept`);
   }
   
   function declineInvitation(inviteId) {
-    dropdownOpen = false;
     router.post(`/memberships/${inviteId}/decline`);
   }
 </script>
 
-<div class="dropdown dropdown-end" class:dropdown-open={dropdownOpen}>
+<div class="dropdown dropdown-end">
   <div
     tabindex="0" 
     role="button" 
     class="btn btn-ghost btn-sm gap-2"
-    onclick={toggleDropdown}
-    onblur={closeDropdown}
   >
     <div class="flex items-center gap-2">
       <span class="material-symbols-outlined text-sm">
@@ -100,7 +84,7 @@
     {#if currentEntity}
       <li>
         <button
-          class="flex items-center gap-3 p-3 hover:bg-base-300"
+          class="flex items-center gap-3 p-3"
           onclick={goToEntityProfile}
         >
           <span class="material-symbols-outlined">settings</span>
@@ -148,9 +132,10 @@
       
       {#each pendingInvites as invite}
         <li>
-          <div class="p-3">
-            <div class="flex items-center gap-3 mb-2">
-              <span class="material-symbols-outlined text-warning">
+          <div class="flex flex-col gap-3
+           p-3">
+            <div class="flex gap-3 items-center w-full">
+              <span class="material-symbols-outlined">
                 {getEntityIcon(invite.entity.type)}
               </span>
               <div class="flex flex-col items-start flex-1">
