@@ -12,6 +12,13 @@ class UsersController < ApplicationController
     if @user.save
       UserMailer.email_verification(@user).deliver_now
       start_new_session_for @user
+      
+      # Link any pending invites for this user's email
+      linked_count = @user.link_pending_invites!
+      if linked_count > 0
+        flash[:notice] = "You have #{linked_count} pending organisation invitation#{linked_count > 1 ? 's' : ''}"
+      end
+      
       Rails.logger.info "██ >> Sign up success"
       flash[:success] = "Account created! Please check your email to verify your account."
       redirect_to email_verification_path

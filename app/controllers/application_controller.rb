@@ -10,6 +10,13 @@ class ApplicationController < ActionController::Base
       user: Current.user&.sanitised,
       currentEntity: @current_context&.current_entity&.as_json(only: [:id, :name, :type]),
       availableEntities: @current_context&.available_entities&.as_json(only: [:id, :name, :type]) || [],
+      pendingInvites: Current.user&.pending_invites&.map { |invite| 
+        {
+          id: invite.id,
+          role: invite.role,
+          entity: invite.entity.as_json(only: [:id, :name, :type])
+        }
+      } || [],
       userContext: @current_context ? {
         role: @current_context.role,
         can_manage_users: @current_context.can_manage_users?,

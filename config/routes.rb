@@ -34,6 +34,16 @@ Rails.application.routes.draw do
   resources :organisations, only: [:new, :create, :show, :edit, :update] do
     member do
       post :invite_member
+      delete :remove_member
+      patch :change_member_role
+    end
+  end
+  
+  # Memberships (invitation actions)
+  resources :memberships, only: [] do
+    member do
+      post :accept
+      post :decline
     end
   end
 end

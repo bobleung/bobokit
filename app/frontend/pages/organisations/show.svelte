@@ -54,6 +54,21 @@
       inviteRole = 'member';
     }
   }
+  
+  function removeMember(memberId, memberName) {
+    if (confirm(`Are you sure you want to remove ${memberName} from this organisation?`)) {
+      router.delete(`/organisations/${organisation.id}/remove_member`, {
+        data: { member_id: memberId }
+      });
+    }
+  }
+  
+  function changeRole(memberId, newRole) {
+    router.patch(`/organisations/${organisation.id}/change_member_role`, {
+      member_id: memberId,
+      role: newRole
+    });
+  }
 </script>
 
 <div class="min-h-[calc(100vh-4rem)] p-4">
@@ -178,21 +193,30 @@
                       <ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-48 p-2 shadow">
                         {#if member.role === 'member'}
                           <li>
-                            <button class="text-sm">
+                            <button 
+                              class="text-sm"
+                              onclick={() => changeRole(member.id, 'admin')}
+                            >
                               <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
                               Make Admin
                             </button>
                           </li>
                         {:else if member.role === 'admin'}
                           <li>
-                            <button class="text-sm">
+                            <button 
+                              class="text-sm"
+                              onclick={() => changeRole(member.id, 'member')}
+                            >
                               <span class="material-symbols-outlined text-sm">person</span>
                               Make Member
                             </button>
                           </li>
                         {/if}
                         <li>
-                          <button class="text-sm text-error">
+                          <button 
+                            class="text-sm text-error"
+                            onclick={() => removeMember(member.id, member.display_name)}
+                          >
                             <span class="material-symbols-outlined text-sm">person_remove</span>
                             {member.pending_invite ? 'Cancel Invitation' : 'Remove Member'}
                           </button>
@@ -200,7 +224,10 @@
                       </ul>
                     </div>
                   {:else if canManageUsers && member.pending_invite}
-                    <button class="btn btn-ghost btn-xs text-error">
+                    <button 
+                      class="btn btn-ghost btn-xs text-error"
+                      onclick={() => removeMember(member.id, member.display_name)}
+                    >
                       <span class="material-symbols-outlined text-sm">cancel</span>
                       Cancel Invite
                     </button>

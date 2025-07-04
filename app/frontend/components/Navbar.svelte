@@ -2,7 +2,7 @@
   import { Link } from '@inertiajs/svelte';
   import EntitySwitcher from './EntitySwitcher.svelte';
   
-  let { user = null, currentEntity = null, availableEntities = [] } = $props();
+  let { user = null, currentEntity = null, availableEntities = [], pendingInvites = [] } = $props();
   
   const isAuthenticated = $derived(!!user);
   const userFirstName = $derived(user?.first_name);
@@ -42,7 +42,7 @@
   <div class="navbar-end gap-2">
     {#if isAuthenticated}
       <!-- Entity Switcher -->
-      <EntitySwitcher {currentEntity} {availableEntities} />
+      <EntitySwitcher {currentEntity} {availableEntities} {pendingInvites} />
       <!-- Desktop user dropdown - visible on all screen sizes when authenticated -->
       <div class="dropdown dropdown-end">
         <button class="btn btn-ghost" aria-label="User menu">

@@ -183,4 +183,106 @@ class OrganisationsController < ApplicationController
     
     redirect_to organisation_path(@organisation)
   end
+  
+  def remove_member
+    @organisation = Organisation.find(params[:id])
+    
+    # Check if user has permission to remove members
+    membership = Current.user.memberships.accepted.find_by(entity: @organisation)
+    
+    unless membership&.can_manage_users?
+      flash[:error] = "You don't have permission to remove members"
+      redirect_to organisation_path(@organisation)
+      return
+    end
+    
+    # Find the member to remove
+    member_to_remove = @organisation.memberships.find_by(id: params[:member_id])
+    
+    unless member_to_remove
+      flash[:error] = "Member not found or has already been removed"
+      redirect_to organisation_path(@organisation)
+      return
+    end
+    
+    # Cannot remove owner
+    if member_to_remove.role == 'owner'
+      flash[:error] = "Cannot remove the organisation owner"
+      redirect_to organisation_path(@organisation)
+      return
+    end
+    
+    # Cannot remove yourself
+    if member_to_remove.user == Current.user
+      flash[:error] = "Cannot remove yourself from the organisation"
+      redirect_to organisation_path(@organisation)
+      return
+    end
+    
+    member_name = member_to_remove.display_name
+    
+    if member_to_remove.destroy
+      flash[:success] = "#{member_name} has been removed from the organisation"
+    else
+      flash[:error] = "Failed to remove member"
+    end
+    
+    redirect_to organisation_path(@organisation)
+  end
+  
+  def change_member_role
+    @organisation = Organisation.find(params[:id])
+    
+    # Check if user has permission to change roles
+    membership = Current.user.memberships.accepted.find_by(entity: @organisation)
+    
+    unless membership&.can_manage_users?
+      flash[:error] = "You don't have permission to change member roles"
+      redirect_to organisation_path(@organisation)
+      return
+    end
+    
+    # Find the member to update
+    member_to_update = @organisation.memberships.find_by(id: params[:member_id])
+    
+    unless member_to_update
+      flash[:error] = "Member not found"
+      redirect_to organisation_path(@organisation)
+      return
+    end
+    
+    new_role = params[:role]
+    
+    # Validate role
+    unless %w[member admin].include?(new_role)
+      flash[:error] = "Invalid role specified"
+      redirect_to organisation_path(@organisation)
+      return
+    end
+    
+    # Cannot change owner role
+    if member_to_update.role == 'owner'
+      flash[:error] = "Cannot change the organisation owner's role"
+      redirect_to organisation_path(@organisation)
+      return
+    end
+    
+    # Cannot change your own role
+    if member_to_update.user == Current.user
+      flash[:error] = "Cannot change your own role"
+      redirect_to organisation_path(@organisation)
+      return
+    end
+    
+    old_role = member_to_update.role
+    member_name = member_to_update.display_name
+    
+    if member_to_update.update(role: new_role)
+      flash[:success] = "#{member_name} has been changed from #{old_role} to #{new_role}"
+    else
+      flash[:error] = "Failed to update member role"
+    end
+    
+    redirect_to organisation_path(@organisation)
+  end
 end

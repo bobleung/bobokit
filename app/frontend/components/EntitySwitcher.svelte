@@ -8,7 +8,7 @@
     default: 'person'
   };
   
-  let { currentEntity = null, availableEntities = [] } = $props();
+  let { currentEntity = null, availableEntities = [], pendingInvites = [] } = $props();
   
   let dropdownOpen = $state(false);
   
@@ -35,6 +35,16 @@
       dropdownOpen = false;
       router.visit(`/organisations/${currentEntity.id}`);
     }
+  }
+  
+  function acceptInvitation(inviteId) {
+    dropdownOpen = false;
+    router.post(`/memberships/${inviteId}/accept`);
+  }
+  
+  function declineInvitation(inviteId) {
+    dropdownOpen = false;
+    router.post(`/memberships/${inviteId}/decline`);
   }
 </script>
 
@@ -107,6 +117,43 @@
       <li>
         <span class="text-sm opacity-70 p-3">No entities available</span>
       </li>
+    {/if}
+    
+    <!-- Pending Invitations -->
+    {#if pendingInvites.length > 0}
+      <div class="divider my-1">Pending Invitations</div>
+      
+      {#each pendingInvites as invite}
+        <li>
+          <div class="p-3">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="material-symbols-outlined text-warning">
+                {getEntityIcon(invite.entity.type)}
+              </span>
+              <div class="flex flex-col items-start flex-1">
+                <span class="font-medium">{invite.entity.name}</span>
+                <span class="text-xs opacity-70">{invite.entity.type} • {invite.role}</span>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button 
+                class="btn btn-success btn-xs flex-1"
+                onclick={() => acceptInvitation(invite.id)}
+              >
+                <span class="material-symbols-outlined text-xs">check</span>
+                Accept
+              </button>
+              <button 
+                class="btn btn-error btn-xs flex-1"
+                onclick={() => declineInvitation(invite.id)}
+              >
+                <span class="material-symbols-outlined text-xs">close</span>
+                Decline
+              </button>
+            </div>
+          </div>
+        </li>
+      {/each}
     {/if}
     
     <div class="divider my-1"></div>
