@@ -1,0 +1,67 @@
+sequenceDiagram
+    participant U as User
+    participant ES as EntitySwitcher.svelte
+    participant S as userContext Store
+    participant API as Rails API
+    participant UC as UserContext
+    participant P as Pundit Policies
+    participant DB as Database
+    
+    Note over U,DB: User Login & Initial Load
+    U->>API: Login
+    API->>DB: Authenticate user
+    API->>UC: Load user memberships
+    UC->>API: Return available entities
+    API->>S: Set initial context
+    S->>ES: Update UI with entities
+    
+    Note over U,DB: Entity Switching Flow
+    U->>ES: Click entity dropdown
+    ES->>S: Request available entities
+    S->>ES: Return cached entities
+    ES->>U: Show entity options
+    
+    U->>ES: Select new entity
+    ES->>API: POST /api/user/switch_context
+    API->>UC: Validate entity access
+    UC->>DB: Check membership
+    DB->>UC: Return membership
+    UC->>API: Update context
+    API->>S: Update store with new context
+    S->>ES: Refresh UI components
+    
+    Note over U,DB: Permission-Based UI Updates
+    S->>ES: Broadcast context change
+    ES->>+P: Check permissions for current view
+    P->>UC: Get current context
+    UC->>P: Return user + entity + membership
+    P->>-ES: Return permission results
+    ES->>U: Update visible actions/buttons
+    
+    Note over U,DB: Job Access with Context
+    U->>API: GET /api/jobs
+    API->>UC: Get current context
+    UC->>P: Authorize with JobPolicy
+    P->>DB: Query owned + shared jobs
+    DB->>P: Return filtered results
+    P->>API: Return authorized jobs
+    API->>S: Update jobs in store
+    S->>U: Display jobs in UI
+    
+    Note over U,DB: Permission Guard Example
+    U->>ES: Attempt to edit job
+    ES->>P: Check JobPolicy.update?
+    P->>UC: Get context
+    UC->>P: Return current entity
+    alt Job owned by current entity
+        P->>ES: Allow based on role
+        ES->>U: Show edit form
+    else Job shared with entity
+        P->>DB: Check job_shares permission_level
+        DB->>P: Return permission level
+        P->>ES: Allow/deny based on level
+        ES->>U: Show appropriate UI
+    else No access
+        P->>ES: Deny access
+        ES->>U: Show read-only or hide
+    end

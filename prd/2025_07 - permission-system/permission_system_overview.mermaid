@@ -1,0 +1,53 @@
+graph TB
+    %% User Layer
+    U[User<br/>id, email, super_admin]
+    
+    %% Organizations STI
+    subgraph STI[Organizations STI]
+        ORG[Organisation Base<br/>id, type, name, email<br/>address fields, metadata]
+        A[Agency<br/>All base fields<br/>No parent_id]
+        C[Client<br/>All base fields<br/>parent_id for hierarchy<br/>code_type, code]
+        L[LocumProfile<br/>All base fields<br/>No parent_id<br/>code_type, code]
+        
+        ORG --> A
+        ORG --> C  
+        ORG --> L
+        C -.-> C
+    end
+    
+    %% Core Models
+    M[Membership<br/>user_id, entity_id<br/>role, active]
+    J[Job<br/>id, description<br/>owner_type, owner_id<br/>status]
+    JS[JobShare<br/>job_id, entity_id<br/>permission_level]
+    
+    %% Authorization Layer
+    subgraph AUTH[Authorization Layer]
+        UC[UserContext<br/>current_user<br/>current_entity<br/>current_membership]
+        JP[JobPolicy<br/>show?, create?<br/>update?, destroy?]
+        OP[OrganisationPolicy<br/>manage_users?<br/>delete_org?]
+    end
+    
+    %% Frontend Layer  
+    subgraph FE[Frontend Svelte + Inertia]
+        ES[EntitySwitcher<br/>Current context display<br/>Entity dropdown]
+        PG[Permission Guards<br/>Conditional UI rendering]
+        ST[userContext Store<br/>Reactive state management]
+    end
+    
+    %% Key Relationships
+    U --> M
+    M --> ORG
+    A --> J
+    C --> J
+    J --> JS
+    JS --> ORG
+    
+    UC --> M
+    UC --> JP
+    UC --> OP
+    JP --> J
+    OP --> ORG
+    
+    ES --> ST
+    ST --> PG
+    ST --> UC

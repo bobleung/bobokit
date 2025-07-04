@@ -1,0 +1,299 @@
+<svg viewBox="0 0 1400 1000" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Define gradients for better visual hierarchy -->
+    <linearGradient id="userGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="orgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FB923C;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F97316;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="jobGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C084FC;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A855F7;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="contextGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#34D399;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#10B981;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Arrowhead marker -->
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#64748B" />
+    </marker>
+    
+    <!-- Filters for depth -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="700" y="30" text-anchor="middle" font-size="24" font-weight="bold" fill="#1E293B">
+    Multi-Entity Permission System Architecture
+  </text>
+
+  <!-- Layer 1: Core Data Models -->
+  <g id="data-models">
+    <rect x="20" y="60" width="1360" height="280" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2" rx="8"/>
+    <text x="40" y="85" font-size="16" font-weight="bold" fill="#475569">Data Models</text>
+    
+    <!-- User Model -->
+    <g transform="translate(60, 100)">
+      <rect width="200" height="140" fill="url(#userGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="100" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="white">User</text>
+      <line x1="20" y1="35" x2="180" y2="35" stroke="white" stroke-opacity="0.5"/>
+      <text x="20" y="55" font-size="12" fill="white">• id</text>
+      <text x="20" y="70" font-size="12" fill="white">• email</text>
+      <text x="20" y="85" font-size="12" fill="white">• encrypted_password</text>
+      <text x="20" y="100" font-size="12" fill="white">• super_admin (bool)</text>
+      <text x="20" y="125" font-size="11" fill="white" font-style="italic">has_many :memberships</text>
+    </g>
+
+    <!-- Membership Model -->
+    <g transform="translate(290, 100)">
+      <rect width="220" height="140" fill="#86EFAC" rx="8" filter="url(#shadow)"/>
+      <text x="110" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#166534">Membership</text>
+      <line x1="20" y1="35" x2="200" y2="35" stroke="#166534" stroke-opacity="0.3"/>
+      <text x="20" y="55" font-size="12" fill="#166534">• user_id → User</text>
+      <text x="20" y="70" font-size="12" fill="#166534">• entity_id → Organisation</text>
+      <text x="20" y="85" font-size="12" fill="#166534">• role: member|admin|owner</text>
+      <text x="20" y="100" font-size="12" fill="#166534">• active: boolean</text>
+      <text x="20" y="125" font-size="11" fill="#166534" font-style="italic">unique: [user_id, entity_id]</text>
+    </g>
+
+    <!-- Organisation STI -->
+    <g transform="translate(540, 100)">
+      <rect width="300" height="140" fill="url(#orgGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="150" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Organisation (STI)</text>
+      <line x1="20" y1="35" x2="280" y2="35" stroke="white" stroke-opacity="0.5"/>
+      <text x="20" y="55" font-size="12" fill="white">• type: Agency|Client|LocumProfile</text>
+      <text x="20" y="70" font-size="12" fill="white">• name, email, phone</text>
+      <text x="20" y="85" font-size="12" fill="white">• address fields, metadata</text>
+      <text x="20" y="100" font-size="12" fill="white">• parent_id (Client only)</text>
+      <text x="20" y="115" font-size="12" fill="white">• code_type, code, note</text>
+    </g>
+
+    <!-- STI Types -->
+    <g transform="translate(540, 260)">
+      <rect x="0" y="0" width="90" height="50" fill="#F97316" rx="6" filter="url(#shadow)"/>
+      <text x="45" y="30" text-anchor="middle" font-size="13" font-weight="bold" fill="white">Agency</text>
+      
+      <rect x="105" y="0" width="90" height="50" fill="#F97316" rx="6" filter="url(#shadow)"/>
+      <text x="150" y="30" text-anchor="middle" font-size="13" font-weight="bold" fill="white">Client</text>
+      
+      <rect x="210" y="0" width="90" height="50" fill="#F97316" rx="6" filter="url(#shadow)"/>
+      <text x="255" y="30" text-anchor="middle" font-size="13" font-weight="bold" fill="white">LocumProfile</text>
+    </g>
+
+    <!-- Job Model -->
+    <g transform="translate(870, 100)">
+      <rect width="220" height="140" fill="url(#jobGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="110" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Job</text>
+      <line x1="20" y1="35" x2="200" y2="35" stroke="white" stroke-opacity="0.5"/>
+      <text x="20" y="55" font-size="12" fill="white">• id</text>
+      <text x="20" y="70" font-size="12" fill="white">• description</text>
+      <text x="20" y="85" font-size="12" fill="white">• owner_type: Agency|Client</text>
+      <text x="20" y="100" font-size="12" fill="white">• owner_id → Organisation</text>
+      <text x="20" y="115" font-size="12" fill="white">• status</text>
+    </g>
+
+    <!-- JobShare Model -->
+    <g transform="translate(1120, 100)">
+      <rect width="240" height="140" fill="#FDE047" rx="8" filter="url(#shadow)"/>
+      <text x="120" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#713F12">JobShare</text>
+      <line x1="20" y1="35" x2="220" y2="35" stroke="#713F12" stroke-opacity="0.3"/>
+      <text x="20" y="55" font-size="12" fill="#713F12">• job_id → Job</text>
+      <text x="20" y="70" font-size="12" fill="#713F12">• entity_id → Organisation</text>
+      <text x="20" y="85" font-size="12" fill="#713F12">• permission_level:</text>
+      <text x="30" y="100" font-size="11" fill="#713F12">- read_only</text>
+      <text x="30" y="113" font-size="11" fill="#713F12">- can_edit_notes</text>
+      <text x="30" y="126" font-size="11" fill="#713F12">- can_edit | full_access</text>
+    </g>
+  </g>
+
+  <!-- Layer 2: Authorization & Context -->
+  <g id="authorization-layer">
+    <rect x="20" y="360" width="1360" height="200" fill="#FEF3C7" stroke="#FDE68A" stroke-width="2" rx="8"/>
+    <text x="40" y="385" font-size="16" font-weight="bold" fill="#78350F">Authorization & Context Layer</text>
+    
+    <!-- UserContext -->
+    <g transform="translate(60, 410)">
+      <rect width="260" height="120" fill="#9333EA" rx="8" filter="url(#shadow)"/>
+      <text x="130" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="white">UserContext</text>
+      <line x1="20" y1="35" x2="240" y2="35" stroke="white" stroke-opacity="0.5"/>
+      <text x="20" y="55" font-size="12" fill="white">• current_user: User</text>
+      <text x="20" y="70" font-size="12" fill="white">• current_entity: Organisation</text>
+      <text x="20" y="85" font-size="12" fill="white">• current_membership: Membership</text>
+      <text x="20" y="105" font-size="11" fill="white" font-style="italic">Validates access on every request</text>
+    </g>
+
+    <!-- Pundit Policies -->
+    <g transform="translate(350, 410)">
+      <rect width="200" height="120" fill="#0891B2" rx="8" filter="url(#shadow)"/>
+      <text x="100" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Pundit Policies</text>
+      <line x1="20" y1="35" x2="180" y2="35" stroke="white" stroke-opacity="0.5"/>
+      <text x="20" y="55" font-size="12" fill="white">• JobPolicy</text>
+      <text x="20" y="70" font-size="12" fill="white">• OrganisationPolicy</text>
+      <text x="20" y="85" font-size="12" fill="white">• UserPolicy</text>
+      <text x="20" y="105" font-size="11" fill="white" font-style="italic">Check permissions via context</text>
+    </g>
+
+    <!-- Role Matrix -->
+    <g transform="translate(580, 410)">
+      <rect width="380" height="120" fill="#059669" rx="8" filter="url(#shadow)"/>
+      <text x="190" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Role Capabilities (Agency/Client)</text>
+      <line x1="20" y1="35" x2="360" y2="35" stroke="white" stroke-opacity="0.5"/>
+      <text x="30" y="55" font-size="12" fill="white">Role     Jobs    Users   Delete Org</text>
+      <line x1="20" y1="60" x2="360" y2="60" stroke="white" stroke-opacity="0.3"/>
+      <text x="30" y="75" font-size="12" fill="white" font-family="monospace">Owner    ✓       ✓       ✓</text>
+      <text x="30" y="90" font-size="12" fill="white" font-family="monospace">Admin    ✓       ✓       ✗</text>
+      <text x="30" y="105" font-size="12" fill="white" font-family="monospace">Member   ✓       ✗       ✗</text>
+    </g>
+
+    <!-- Special Cases -->
+    <g transform="translate(990, 410)">
+      <rect width="350" height="120" fill="#DC2626" rx="8" filter="url(#shadow)"/>
+      <text x="175" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Special Access Rules</text>
+      <line x1="20" y1="35" x2="330" y2="35" stroke="white" stroke-opacity="0.5"/>
+      <text x="20" y="55" font-size="12" fill="white">• Super Admin: Unrestricted access</text>
+      <text x="20" y="70" font-size="12" fill="white">• Parent Client: Manage child memberships</text>
+      <text x="20" y="85" font-size="12" fill="white">• Locum: Always owner of their profile</text>
+      <text x="20" y="100" font-size="12" fill="white">• Job Creator: Full control of their jobs</text>
+    </g>
+  </g>
+
+  <!-- Layer 3: Frontend Components -->
+  <g id="frontend-layer">
+    <rect x="20" y="580" width="1360" height="180" fill="#DBEAFE" stroke="#93C5FD" stroke-width="2" rx="8"/>
+    <text x="40" y="605" font-size="16" font-weight="bold" fill="#1E3A8A">Frontend Layer (Svelte + Inertia)</text>
+    
+    <!-- Entity Switcher -->
+    <g transform="translate(60, 630)">
+      <rect width="280" height="100" fill="#3B82F6" rx="8" filter="url(#shadow)"/>
+      <text x="140" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="white">EntitySwitcher.svelte</text>
+      <line x1="20" y1="35" x2="260" y2="35" stroke="white" stroke-opacity="0.5"/>
+      <text x="20" y="55" font-size="12" fill="white">• Shows current entity context</text>
+      <text x="20" y="70" font-size="12" fill="white">• Lists all available entities</text>
+      <text x="20" y="85" font-size="12" fill="white">• Handles context switching</text>
+    </g>
+
+    <!-- Permission Guards -->
+    <g transform="translate(370, 630)">
+      <rect width="280" height="100" fill="#8B5CF6" rx="8" filter="url(#shadow)"/>
+      <text x="140" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Permission Guards</text>
+      <line x1="20" y1="35" x2="260" y2="35" stroke="white" stroke-opacity="0.5"/>
+      <text x="20" y="55" font-size="12" fill="white">• {#if $userContext.can('edit', job)}</text>
+      <text x="20" y="70" font-size="12" fill="white">• Hide/disable UI elements</text>
+      <text x="20" y="85" font-size="12" fill="white">• Show permission messages</text>
+    </g>
+
+    <!-- UserContext Store -->
+    <g transform="translate(680, 630)">
+      <rect width="280" height="100" fill="url(#contextGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="140" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="white">userContext Store</text>
+      <line x1="20" y1="35" x2="260" y2="35" stroke="white" stroke-opacity="0.5"/>
+      <text x="20" y="55" font-size="12" fill="white">• Writable store for current context</text>
+      <text x="20" y="70" font-size="12" fill="white">• Reactive permissions</text>
+      <text x="20" y="85" font-size="12" fill="white">• Persists across navigation</text>
+    </g>
+
+    <!-- API Integration -->
+    <g transform="translate(990, 630)">
+      <rect width="350" height="100" fill="#F59E0B" rx="8" filter="url(#shadow)"/>
+      <text x="175" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="white">API Integration</text>
+      <line x1="20" y1="35" x2="330" y2="35" stroke="white" stroke-opacity="0.5"/>
+      <text x="20" y="55" font-size="12" fill="white">• Inertia.post('/api/user/switch_context')</text>
+      <text x="20" y="70" font-size="12" fill="white">• Automatic CSRF protection</text>
+      <text x="20" y="85" font-size="12" fill="white">• Context validated server-side</text>
+    </g>
+  </g>
+
+  <!-- Permission Flow -->
+  <g id="permission-flow">
+    <rect x="20" y="780" width="1360" height="200" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="2" rx="8"/>
+    <text x="40" y="805" font-size="16" font-weight="bold" fill="#7F1D1D">Permission Check Flow</text>
+    
+    <!-- Flow boxes -->
+    <g transform="translate(60, 830)">
+      <!-- Step 1 -->
+      <rect width="220" height="80" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2" rx="6"/>
+      <text x="110" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#92400E">1. User Action</text>
+      <text x="110" y="45" text-anchor="middle" font-size="11" fill="#78350F">User clicks "Edit Job"</text>
+      <text x="110" y="60" text-anchor="middle" font-size="11" fill="#78350F">in the UI</text>
+      
+      <!-- Arrow -->
+      <line x1="220" y1="40" x2="280" y2="40" stroke="#64748B" stroke-width="2" marker-end="url(#arrowhead)"/>
+      
+      <!-- Step 2 -->
+      <g transform="translate(280, 0)">
+        <rect width="220" height="80" fill="#DBEAFE" stroke="#3B82F6" stroke-width="2" rx="6"/>
+        <text x="110" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#1E3A8A">2. Frontend Check</text>
+        <text x="110" y="45" text-anchor="middle" font-size="11" fill="#1E40AF">Guards validate locally</text>
+        <text x="110" y="60" text-anchor="middle" font-size="11" fill="#1E40AF">using context store</text>
+      </g>
+      
+      <!-- Arrow -->
+      <line x1="500" y1="40" x2="560" y2="40" stroke="#64748B" stroke-width="2" marker-end="url(#arrowhead)"/>
+      
+      <!-- Step 3 -->
+      <g transform="translate(560, 0)">
+        <rect width="220" height="80" fill="#E9D5FF" stroke="#9333EA" stroke-width="2" rx="6"/>
+        <text x="110" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#581C87">3. API Request</text>
+        <text x="110" y="45" text-anchor="middle" font-size="11" fill="#6B21A8">PATCH /api/jobs/:id</text>
+        <text x="110" y="60" text-anchor="middle" font-size="11" fill="#6B21A8">with context headers</text>
+      </g>
+      
+      <!-- Arrow -->
+      <line x1="780" y1="40" x2="840" y2="40" stroke="#64748B" stroke-width="2" marker-end="url(#arrowhead)"/>
+      
+      <!-- Step 4 -->
+      <g transform="translate(840, 0)">
+        <rect width="220" height="80" fill="#D1FAE5" stroke="#059669" stroke-width="2" rx="6"/>
+        <text x="110" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#064E3B">4. Backend Policy</text>
+        <text x="110" y="45" text-anchor="middle" font-size="11" fill="#047857">JobPolicy#update?</text>
+        <text x="110" y="60" text-anchor="middle" font-size="11" fill="#047857">validates via UserContext</text>
+      </g>
+      
+      <!-- Arrow -->
+      <line x1="1060" y1="40" x2="1120" y2="40" stroke="#64748B" stroke-width="2" marker-end="url(#arrowhead)"/>
+      
+      <!-- Step 5 -->
+      <g transform="translate(1120, 0)">
+        <rect width="200" height="80" fill="#FEE2E2" stroke="#EF4444" stroke-width="2" rx="6"/>
+        <text x="100" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#7F1D1D">5. Result</text>
+        <text x="100" y="45" text-anchor="middle" font-size="11" fill="#991B1B">Allow or Deny</text>
+        <text x="100" y="60" text-anchor="middle" font-size="11" fill="#991B1B">with audit log</text>
+      </g>
+    </g>
+    
+    <!-- Example scenarios -->
+    <g transform="translate(60, 930)">
+      <text x="0" y="0" font-size="12" font-weight="bold" fill="#374151">Example Scenarios:</text>
+      <text x="0" y="20" font-size="11" fill="#4B5563">• Agency owner → Full access to agency jobs | • Client member → View/edit shared jobs based on permission_level</text>
+      <text x="0" y="35" font-size="11" fill="#4B5563">• Locum → Can edit notes on shared jobs | • Parent client admin → Can manage child client memberships</text>
+    </g>
+  </g>
+
+  <!-- Relationships (arrows) -->
+  <g id="relationships">
+    <!-- User to Membership -->
+    <line x1="260" y1="170" x2="290" y2="170" stroke="#64748B" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- Membership to Organisation -->
+    <line x1="510" y1="170" x2="540" y2="170" stroke="#64748B" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- Organisation to Job (owner) -->
+    <line x1="840" y1="170" x2="870" y2="170" stroke="#64748B" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- Job to JobShare -->
+    <line x1="1090" y1="170" x2="1120" y2="170" stroke="#64748B" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- JobShare back to Organisation -->
+    <path d="M 1240 240 Q 1240 320 690 320 Q 690 260 690 240" stroke="#64748B" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  </g>
+</svg>

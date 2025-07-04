@@ -1,0 +1,73 @@
+erDiagram
+    USERS {
+        bigint id PK
+        string email UK
+        string encrypted_password
+        boolean super_admin
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    ORGANISATIONS {
+        bigint id PK
+        string type "Agency, Client, LocumProfile"
+        string name
+        string email
+        string phone
+        string address_line1
+        string address_line2
+        string city
+        string county
+        string postcode
+        string country
+        jsonb metadata
+        bigint parent_id FK "Client hierarchy only"
+        string code_type "GMC, site codes, etc"
+        string code
+        string note
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    MEMBERSHIPS {
+        bigint id PK
+        bigint user_id FK
+        bigint entity_id FK
+        integer role "member=0, admin=1, owner=2"
+        boolean active
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    JOBS {
+        bigint id PK
+        text description
+        string owner_type "Agency or Client"
+        bigint owner_id FK
+        string status
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    JOB_SHARES {
+        bigint id PK
+        bigint job_id FK
+        bigint entity_id FK
+        integer permission_level "read_only=0, can_edit_notes=1, can_edit=2, full_access=3"
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    %% Relationships
+    USERS ||--o{ MEMBERSHIPS : "has many"
+    ORGANISATIONS ||--o{ MEMBERSHIPS : "has many"
+    ORGANISATIONS ||--o{ ORGANISATIONS : "parent/child (Clients only)"
+    ORGANISATIONS ||--o{ JOBS : "owns (polymorphic)"
+    JOBS ||--o{ JOB_SHARES : "shared with"
+    ORGANISATIONS ||--o{ JOB_SHARES : "receives shares"
+    
+    %% Constraints and Indexes
+    MEMBERSHIPS ||--|| USERS : user_id
+    MEMBERSHIPS ||--|| ORGANISATIONS : entity_id
+    JOB_SHARES ||--|| JOBS : job_id
+    JOB_SHARES ||--|| ORGANISATIONS : entity_id
