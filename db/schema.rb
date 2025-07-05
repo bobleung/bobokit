@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_04_201709) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_05_232600) do
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "entity_id", null: false
@@ -68,6 +68,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_04_201709) do
     t.string "verification_token"
     t.datetime "verification_token_expires_at"
     t.boolean "super_admin", default: false
+    t.boolean "deactivated", default: false, null: false
+    t.index ["deactivated"], name: "index_users_on_deactivated"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["verification_token"], name: "index_users_on_verification_token", unique: true
   end

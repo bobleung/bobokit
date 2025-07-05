@@ -39,7 +39,20 @@ module Authentication
     end
 
     def find_session_by_cookie
-      Session.find_by(id: cookies.signed[:session_id]) if cookies.signed[:session_id]
+      return unless cookies.signed[:session_id]
+      
+      session = Session.find_by(id: cookies.signed[:session_id])
+      return unless session
+      
+      # Check if the user is deactivated (using unscoped to bypass default scope)
+      user = User.unscoped.find_by(id: session.user_id)
+      if user&.deactivated?
+        session.destroy
+        cookies.delete(:session_id)
+        return nil
+      end
+      
+      session
     end
 
     def request_authentication

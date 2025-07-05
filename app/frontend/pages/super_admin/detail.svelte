@@ -5,10 +5,12 @@
     let { user } = $props()
     let data = $derived(user ? { ...user } : null);
     let emailVerified = $state(false);
+    // let deactivated = $state(false);
     
-    // Update emailVerified when data changes
+    // Update emailVerified and deactivated when data changes
     $effect(() => {
         emailVerified = data ? !!data.email_verified_at : false;
+        // deactivated = data ? !!data.deactivated : false;
     });
 
     function handleSubmit(event){
@@ -25,11 +27,30 @@
                 last_name: data.last_name,
                 email_address: data.email_address,
                 super_admin: data.super_admin,
-                email_verified_at: emailVerified ? new Date().toISOString() : null
+                email_verified_at: emailVerified ? new Date().toISOString() : null,
+                deactivated: data.deactivated
             }
         };
 
         router.patch(`/super/users/${data.id}`, updateData);
+    }
+
+    function handleDelete() {
+        if (!data || !data.id) {
+            console.error("No user data or ID available");
+            return;
+        }
+        
+        router.delete(`/super/users/${data.id}`);
+    }
+
+    // Setup Deletion Modal
+    let modal = $state();
+    let confirmDeletion = $state(false);
+
+    function openModal() {
+        confirmDeletion = false;
+        modal.showModal();
     }
 
 </script>
@@ -61,6 +82,10 @@
                 Email Verified
                 <input type="checkbox" bind:checked={emailVerified} class="toggle toggle-success" />
             </label>
+            <label class="label text-base-content">
+                Deactivate
+                <input type="checkbox" bind:checked={data.deactivated} class="toggle toggle-success" />
+            </label>
         </div>
     </fieldset>
 
@@ -75,4 +100,48 @@
       
 
 </form>
+
+<!-- Deletion User Section -->
+{#if data}
+    <!-- Button to trigger modal -->
+    <div class="flex justify-center md:justify-end w-full max-w-full">
+        <button class="btn btn-link text-base-content link-hover" onclick={openModal}>Delete this User</button>
+    </div>
+
+    <!-- Modal -->
+    <dialog bind:this={modal} class="modal">
+        <div class="modal-box bg-warning text-warning-content/75">
+            <h3 class="font-bold text-lg">Delete {data.first_name} {data.last_name}?</h3>
+            <p class="py-4">This action is irreversible. Deleting this user will permanently remove their account and all associated data from the system.</p>
+            
+            <!-- Confirmation Checkbox -->
+            <div class="form-control">
+                <label class="label cursor-pointer justify-start gap-3">
+                    <input 
+                        type="checkbox" 
+                        class="checkbox checkbox-error" 
+                        bind:checked={confirmDeletion}
+                    />
+                    <span class="label text-warning-content">I understand this action cannot be undone</span>
+                </label>
+            </div>
+            
+            <div class="modal-action">
+                <form method="dialog">
+                    <button 
+                        class="btn btn-error mx-4" 
+                        onclick={handleDelete}
+                        disabled={!confirmDeletion}
+                    >
+                        Yes, Delete
+                    </button>
+                    <button class="btn">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </dialog>
+
+    <br>
+    <br>
+{/if}
 {/if}
