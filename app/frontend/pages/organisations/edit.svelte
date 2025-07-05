@@ -98,7 +98,7 @@
 
   <!-- Modal -->
   <dialog bind:this={modal} class="modal">
-    <div class="modal-box bg-warning text-accent-content">
+    <div class="modal-box bg-warning text-warning-content">
       <h3 class="font-bold text-lg">Deactivate {org.name} ?</h3>
       <p class="py-4">This action is irreversible. To proceed, you must first remove all users except the owner. Deactivation will only apply to future bookings, existing bookings will remain in the system to preserve data integrity.</p>
       

@@ -5,6 +5,12 @@ class SuperAdminController < ApplicationController
     @users = User.all
     render inertia: "super_admin/users", props: { users: @users }
   end
+
+  def show_user
+    @user = User.find(params[:id])
+    render inertia: "super_admin/show_user", props: { user: @user }
+  end
+
   def orgs
     render inertia: "super_admin/orgs"
   end

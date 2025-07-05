@@ -6,9 +6,11 @@
 </script>
 
 <div class="min-h-screen bg-base-100 flex flex-col">
+  <!-- Navbar Zone -->
   <Navbar {user} {currentEntity} {availableEntities} {pendingInvites} />
   <Flash />
-  <main class="flex-1">
+  <!-- Page Body Zone -->
+  <main class="flex-1 h-[calc(100vh-4rem)] overflow-auto p-6">
     {@render children()}
   </main>
 </div>

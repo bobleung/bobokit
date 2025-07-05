@@ -50,5 +50,6 @@ Rails.application.routes.draw do
 
   # Super Admin Pages
   get "super/users", to: "super_admin#users"
+  get "super/users/:id", to: "super_admin#show_user"
   get "super/orgs", to: "super_admin#orgs"
 end
