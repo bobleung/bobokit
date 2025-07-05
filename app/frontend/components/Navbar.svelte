@@ -50,7 +50,7 @@
       <span class="text-base-content/25">|</span>
       <ul class="menu menu-horizontal px-1">
         <li>
-          <details>
+          <details class="dropdown dropdown-hover">
             <summary>Super Admin</summary>
             <ul class="p-2 min-w-40">
               <li><Link href="/super/users">Users</Link></li>
