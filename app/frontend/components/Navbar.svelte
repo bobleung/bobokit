@@ -13,7 +13,7 @@
   
 </script>
 
-<div class="navbar bg-base-100 shadow-sm">
+<div class="navbar bg-base-100 shadow-sm sticky top-0 z-50">
   <!-- Brand/Logo - always on left -->
   
   <div class="navbar-start">

@@ -16,15 +16,6 @@
   const hasOtherMembers = $derived(members.length > 1);
   const canDeactivate = $derived(isOwner && !hasOtherMembers);
   
-  // function handleDeactivate() {
-  //   if (!canDeactivate) return;
-    
-  //   const confirmMessage = `Are you sure you want to deactivate "${organisation.name}"? This will make it unavailable for new bookings and hide it from the organisation switcher. This action cannot be undone.`;
-    
-  //   if (confirm(confirmMessage)) {
-  //     router.patch(`/organisations/${organisation.id}/deactivate`);
-  //   }
-  // }
   function handleDeactivate() {
     router.patch(`/organisations/${organisation.id}/deactivate`);
   }
