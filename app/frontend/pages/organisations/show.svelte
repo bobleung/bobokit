@@ -7,6 +7,7 @@
   console.log("Org prop", organisation)
   console.log("Membership prop", membership)
   console.log("members prop", members)
+  console.log("Entities",ENTITIES)
   
   let showInviteForm = $state(false);
   let inviteEmail = $state('');
@@ -20,7 +21,8 @@
   };
 
   function getEntityIcon(type) {
-    return ENTITY_ICONS[type] || ENTITY_ICONS.default;
+    // return ENTITY_ICONS[type] || ENTITY_ICONS.default;
+    return ENTITIES[type].icon
   }
   
   // Check if current user can manage members

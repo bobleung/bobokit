@@ -2,5 +2,5 @@
 
 @plugin "@tailwindcss/typography";
 @plugin "daisyui" {
-    themes: synthwave --default, light, dark;
+    themes: retro --default, light, dark;
   }

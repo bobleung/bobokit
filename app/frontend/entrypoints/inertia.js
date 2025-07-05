@@ -2,6 +2,13 @@ import { createInertiaApp } from '@inertiajs/svelte'
 import  { mount } from 'svelte';
 import Layout from '../layouts/Layout.svelte';
 
+// Global Variables
+globalThis.ENTITIES = {
+  Agency: {plural:"agencies", icon:"handshake"},
+  Client: {plural:"clients", icon:"home_health"},
+  Locum: {plural:"locums", icon:"person"}
+}
+
 createInertiaApp({
   // Set default page title
   // see https://inertia-rails.dev/guide/title-and-meta
