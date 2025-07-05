@@ -11,7 +11,7 @@
 
   let { currentEntity = null, availableEntities = [], pendingInvites = [], user = null } = $props();
 
-  $inspect("current entity mount: ", currentEntity)
+  // $inspect("current entity mount: ", currentEntity)
   
   // Get icon for entity type
   function getEntityIcon(type) {

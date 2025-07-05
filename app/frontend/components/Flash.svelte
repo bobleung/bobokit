@@ -6,7 +6,6 @@
 
   // Reset visiblity each time there's a new flash object
   $effect(() => {
-    console.log("Hello")
     if (flash.success || flash.error || flash.notice || flash.alert) {
       visible = true
     }
