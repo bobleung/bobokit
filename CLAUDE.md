@@ -171,6 +171,115 @@ app/
 - Uses Thruster for HTTP acceleration
 - Dockerfile included for containerization
 
+## Multi-Entity Permission System
+
+### System Overview
+- **Organisation Types**: Agency, Client, Locum (Single Table Inheritance)
+- **Role-Based Permissions**: Member, Admin, Owner roles with different capabilities
+- **Entity Switching**: Users can belong to multiple organisations and switch context
+- **Soft Deletion**: Organisations can be deactivated (preserved for data integrity)
+
+### Data Models
+
+#### Organisations (STI)
+```ruby
+# Agency, Client, Locum inherit from Organisation
+organisations
+├── type (string) # 'Agency', 'Client', 'Locum'
+├── name, email, phone
+├── address fields (UK format)
+├── code_type, code # License types/numbers for Locums
+├── parent_id # For Client hierarchies
+├── active (boolean, default: true) # Soft deletion
+└── timestamps
+```
+
+#### Memberships
+```ruby
+memberships
+├── user_id, entity_id (organisation)
+├── role (enum: member=0, admin=1, owner=2)
+├── invited_email # For pending invitations
+├── invite_accepted (boolean, default: false)
+└── timestamps
+```
+
+### Permission Matrix
+
+| Action | Member | Admin | Owner |
+|--------|--------|--------|-------|
+| View organisation | ✅ | ✅ | ✅ |
+| Edit organisation | ❌ | ✅ | ✅ |
+| Invite members | ❌ | ✅ | ✅ |
+| Remove other members | ❌ | ✅ | ✅ |
+| Change member roles | ❌ | ✅ | ✅ |
+| Leave organisation | ✅ | ❌ | ❌ |
+| Deactivate organisation | ❌ | ❌ | ✅ |
+
+### Key Controllers
+
+#### OrganisationsController
+```ruby
+# Actions: new, create, show, edit, update, invite_member, remove_member, change_member_role, deactivate
+# Permission checks at controller level for admin/owner actions
+# Frontend permission checks for UI elements
+```
+
+#### UserContextController
+```ruby
+# Handles entity switching: POST /user/switch_context
+# Updates session[:current_entity_id]
+# Validates user has access to target entity
+```
+
+### Frontend Components
+
+#### EntitySwitcher Component
+- Integrated user profile dropdown with entity switching
+- Format: "Bob (Organisation Name)"
+- Handles pending invitations (Accept/Decline)
+- Uses proper Link vs Button patterns for different HTTP methods
+
+#### Navigation Patterns
+- **Link components**: GET requests only (Profile, Log Out, Manage Entity)
+- **Button components**: POST/PATCH/DELETE requests with router methods
+- **Dropdown closing**: Use `document.activeElement.blur()`
+
+### Key Business Rules
+
+#### Organisation Creation
+- Creator automatically becomes owner with `invite_accepted: true`
+- Automatic context switching to new organisation
+
+#### Membership Management
+- Email-based invitations with accept/decline flow
+- Members can remove themselves, admins/owners cannot
+- Owners cannot be removed
+
+#### Organisation Deactivation
+- Only owners can deactivate
+- Must remove all other members first
+- Marks `active: false` (soft deletion)
+- User context cleared, hidden from entity switcher
+
+### Context Management
+```ruby
+# ApplicationController inertia_share
+{
+  user: Current.user&.sanitised,
+  currentEntity: @current_context&.current_entity,
+  availableEntities: @current_context&.available_entities,
+  pendingInvites: Current.user&.pending_invites,
+  userContext: { role, permissions, super_admin }
+}
+```
+
+### DaisyUI Integration
+- Use native DaisyUI patterns: `avatar-placeholder`, fieldset components
+- Button styling: `btn-link` for link-style buttons
+- Modal patterns for destructive actions (deactivation)
+- Responsive grid layouts with `md:col-span-2` for full-width fields
+
 ## Memories
 
 ### Flash Message Implementation
@@ -185,3 +294,10 @@ app/
 
 ### Inertia Props Passing
 - Passing props to inertia in controllers doesn't need .as_json, it can be as pure Ruby object. Default to this.
+
+### Multi-Entity System Implementation
+- Built comprehensive role-based permission system with STI organisations
+- Implemented entity switching with proper context management
+- Added member invitation system with email-based workflow
+- Soft deletion pattern for organisation deactivation
+- Frontend permission enforcement with backend validation layers

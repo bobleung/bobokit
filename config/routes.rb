@@ -21,17 +21,17 @@ Rails.application.routes.draw do
   get "profile", to: "users#profile"
   patch "profile", to: "users#update_profile"
   resources :users
-  
+
   # Email verification routes
   get "email_verification", to: "email_verifications#show"
   get "verify_email", to: "email_verifications#verify"
   post "resend_verification", to: "email_verifications#resend"
-  
+
   # User context switching
   post "user/switch_context", to: "user_context#switch_context"
-  
+
   # Organisations
-  resources :organisations, only: [:new, :create, :show, :edit, :update] do
+  resources :organisations, only: [ :new, :create, :show, :edit, :update ] do
     member do
       post :invite_member
       delete :remove_member
@@ -39,7 +39,7 @@ Rails.application.routes.draw do
       patch :deactivate
     end
   end
-  
+
   # Memberships (invitation actions)
   resources :memberships, only: [] do
     member do
@@ -47,4 +47,8 @@ Rails.application.routes.draw do
       post :decline
     end
   end
+
+  # Super Admin Pages
+  get "super/users", to: "super_admin#users"
+  get "super/orgs", to: "super_admin#orgs"
 end
