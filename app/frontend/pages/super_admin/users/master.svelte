@@ -2,7 +2,10 @@
     import Search from "@components/Search.svelte";
     import { router } from "@inertiajs/svelte";
 
-    let { selectedId = $bindable(''), searchTerm = $bindable(), users, search = '' } = $props()
+    let { selectedId = $bindable(''), searchTerm = $bindable(), users } = $props()
+
+    // Initial search value
+    const search = searchTerm || ""
 
     function selectedUser(userId) {
         selectedId = userId

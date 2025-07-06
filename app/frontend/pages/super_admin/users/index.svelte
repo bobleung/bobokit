@@ -10,9 +10,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     let selectedId = $state(Number(urlParams.get('selectedId')) || '');
     let selectedUser = $derived(users?.find(user => user.id === selectedId));
-    let searchTerm = $state('');
-
-    $inspect("SelectedId: " + selectedId)
+    let searchTerm = $state(urlParams.get('search') || '');
 
     // Update URL when selectedId changes
     $effect(() => {
