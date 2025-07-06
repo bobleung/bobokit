@@ -1,6 +1,7 @@
 <script>
     import FormInput from "../../components/FormInput.svelte";
     import FormCheckbox from "../../components/FormCheckbox.svelte";
+    import { router } from "@inertiajs/svelte";
 
     let { selectedId = $bindable() } = $props()
 
@@ -18,6 +19,37 @@
 
     function closePanel(){
         selectedId = null
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault();
+
+        const submitData = {
+            user: {
+                first_name: data.first_name,
+                last_name: data.last_name,
+                email_address: data.email_address,
+                super_admin: data.super_admin,
+                password: data.password,
+                password_confirmation: data.password, // Set password_confirmation same as password
+                email_verified_at: emailVerified ? new Date().toISOString() : null
+            }
+        };
+
+        router.post('/super/users', submitData, {
+            onSuccess: () => {
+                // Reset form
+                data.first_name = '';
+                data.last_name = '';
+                data.email_address = '';
+                data.super_admin = false;
+                data.password = '';
+                emailVerified = false;
+                
+                // Close panel
+                selectedId = '';
+            }
+        });
     }
 
 </script>
@@ -65,7 +97,7 @@
 
         <!-- Action Buttons -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button class="btn btn-primary">Update</button>
+            <button class="btn btn-primary">Create User</button>
         </div>
 
     </form>
