@@ -18,6 +18,7 @@
             replace: true
         });
     }
+
 </script>
 
 <div class="card shadow-sm w-full max-w-full max-h-full my-6">

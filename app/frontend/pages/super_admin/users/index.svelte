@@ -2,10 +2,36 @@
     import Master from './master.svelte';
     import Detail from './detail.svelte';
     import DetailNew from './DetailNew.svelte';
+    import { router } from '@inertiajs/svelte';
+    
     let { users } = $props()
-    let selectedId = $state('');
+    
+    // Initialize selectedId from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    let selectedId = $state(Number(urlParams.get('selectedId')) || '');
     let selectedUser = $derived(users?.find(user => user.id === selectedId));
     let searchTerm = $state('');
+
+    $inspect("SelectedId: " + selectedId)
+
+    // Update URL when selectedId changes
+    $effect(() => {
+        const currentUrl = new URL(window.location);
+        if (selectedId) {
+            currentUrl.searchParams.set('selectedId', selectedId);
+        } else {
+            currentUrl.searchParams.delete('selectedId');
+        }
+        
+        // Only update if the URL actually changed
+        if (currentUrl.toString() !== window.location.toString()) {
+            router.get(currentUrl.pathname + currentUrl.search, {}, {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true
+            });
+        }
+    });
 
     function deselectUser() {
         selectedId = '';
