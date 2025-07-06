@@ -1,5 +1,8 @@
 <script>
-    let { selectedId = $bindable(''), users } = $props()
+    import Search from "@components/Search.svelte";
+    import { router } from "@inertiajs/svelte";
+
+    let { selectedId = $bindable(''), searchTerm = $bindable(), users, search = '' } = $props()
 
     function selectedUser(userId) {
         selectedId = userId
@@ -7,6 +10,13 @@
 
     function newUser(){
         selectedId = "new"
+    }
+
+    function handleSearch(term) {
+        router.get('/super/users', { search: term }, {
+            preserveState: true,
+            replace: true
+        });
     }
 </script>
 
@@ -17,6 +27,7 @@
             <span class="material-symbols-outlined text-xl">group</span>
             <h2 class="text-lg font-semibold">Users</h2>
         </div>
+        <Search onSearch={handleSearch} initialValue={search}></Search>
         <button type="button" class="btn btn-ghost btn-xs btn-square" onclick={newUser}>
             <span class="material-symbols-outlined">add</span>
         </button>

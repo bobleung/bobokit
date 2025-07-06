@@ -5,6 +5,7 @@
     let { users } = $props()
     let selectedId = $state('');
     let selectedUser = $derived(users?.find(user => user.id === selectedId));
+    let searchTerm = $state('');
 
     function deselectUser() {
         selectedId = '';
@@ -13,6 +14,7 @@
     console.log("Users", users)
     $inspect("Selected User ID: " + selectedId)
     $inspect("Selected User ", selectedUser)
+    $inspect("Search Term: " + searchTerm)
     
 </script>
 
@@ -25,7 +27,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-full">
         <!-- Left Column -->
         <div class="md:col-span-1">
-            <Master bind:selectedId={selectedId} users={users}></Master>
+            <Master bind:selectedId={selectedId} bind:searchTerm={searchTerm} users={users}></Master>
         </div>
         
         <!-- Right Column -->

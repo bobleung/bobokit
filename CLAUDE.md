@@ -211,3 +211,8 @@ memberships
 ## Component Organization
 - `app/frontend/components/*` is where I store the components
 - Added an alias to this folder, so components path is `@components/*`
+
+## Database Query Patterns
+
+### Arel Usage
+- Always use Arel (ActiveRecord's query builder) in controller to do DB queries so we stay DB agnostic

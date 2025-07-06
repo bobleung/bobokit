@@ -3,7 +3,21 @@ class SuperAdminController < ApplicationController
 
   def users
     @users = User.unscoped.all
-    render inertia: "super_admin/users/index", props: { users: @users }
+    
+    # Filter by search term if provided
+    if params[:search].present?
+      search_term = "%#{params[:search]}%"
+      @users = @users.where(
+        @users.arel_table[:first_name].matches(search_term)
+          .or(@users.arel_table[:last_name].matches(search_term))
+          .or(@users.arel_table[:email_address].matches(search_term))
+      )
+    end
+    
+    render inertia: "super_admin/users/index", props: { 
+      users: @users, 
+      search: params[:search] || '' 
+    }
   end
 
   def create_user
