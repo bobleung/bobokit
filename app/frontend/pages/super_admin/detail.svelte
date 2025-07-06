@@ -3,7 +3,7 @@
     import FormInput from "../../components/FormInput.svelte";
     import { router } from "@inertiajs/svelte";
 
-    let { user } = $props()
+    let { user, onClose } = $props()
     let data = $state(user ? { ...user } : null);
     let emailVerified = $state(false);
   
@@ -12,6 +12,8 @@
         if (user) {
             data = { ...user };
             emailVerified = !!user.email_verified_at;
+        } else {
+            data = null;
         }
     });
 
@@ -56,25 +58,29 @@
     }
 
     function deselectUser(){
-        user = null
+        if (onClose) {
+            onClose();
+            data = null
+        }
     }
 
 </script>
 
-<!-- Form -->
+
 {#if data}
 <div class="card shadow-sm w-full max-w-full max-h-full my-6">
-    <!-- Form Header -->
+    <!-- Panel Header -->
     <div class="flex items-center justify-between px-6 py-4 bg-base-200 rounded-t-lg">
         <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-xl">edit</span>
             <h2 class="text-lg font-semibold">Edit User</h2>
         </div>
-        <button type="button" class="btn btn-ghost btn-sm btn-square" onclick={deselectUser}>
-            <span class="material-symbols-outlined text-xl">close</span>
+        <button type="button" class="btn btn-ghost btn-xs btn-square" onclick={deselectUser}>
+            <span class="material-symbols-outlined">close</span>
         </button>
     </div>
     
+    <!-- Form -->
     <form
         onsubmit={handleSubmit}
         class="card-body">

@@ -3,7 +3,11 @@
     import Detail from './detail.svelte';
     let { users } = $props()
     let selectedId = $state('');
-    let selectedUser = $derived(users?.find(user => user.id === selectedId));                                                                                   
+    let selectedUser = $derived(users?.find(user => user.id === selectedId));
+    
+    function clearSelection() {
+        selectedId = '';
+    }
 
     console.log("Users", users)
     $inspect("Selected User ID: " + selectedId)
@@ -25,7 +29,7 @@
         
         <!-- Right Column -->
         <div class="md:col-span-1">
-            <Detail bind:user={selectedUser}></Detail>
+            <Detail user={selectedUser} onClose={clearSelection}></Detail>
         </div>
     </div>
 </div>

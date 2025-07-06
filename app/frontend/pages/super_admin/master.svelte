@@ -4,10 +4,25 @@
     function selectedUser(userId) {
         selectedId = userId
     }
+
+    function newUser(){
+        selectedId = "new"
+    }
 </script>
 
-<div class="flex grow card card-body card-border shadow-sm w-full max-w-full max-h-full my-6">
-    <div class="overflow-x-auto">
+<div class="card shadow-sm w-full max-w-full max-h-full my-6">
+    <!-- Panel Header -->
+    <div class="flex items-center justify-between px-6 py-4 bg-base-200 rounded-t-lg">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-xl">group</span>
+            <h2 class="text-lg font-semibold">Users</h2>
+        </div>
+        <button type="button" class="btn btn-ghost btn-xs btn-square" onclick={newUser}>
+            <span class="material-symbols-outlined">add</span>
+        </button>
+    </div>
+    
+    <div class="card-body overflow-x-auto">
         <table class="table table-xs table-pin-rows">
             <!-- Column Headers -->
             <thead>
