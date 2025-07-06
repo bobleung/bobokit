@@ -207,3 +207,7 @@ memberships
 - Inertia props don't need `.as_json` - pass pure Ruby objects
 - When adding private methods, verify placement to avoid making public methods private
 - Super admin password updates filter empty fields: `update_params.except(:password, :password_confirmation)` when blank
+
+## Component Organization
+- `app/frontend/components/*` is where I store the components
+- Added an alias to this folder, so components path is `@components/*`

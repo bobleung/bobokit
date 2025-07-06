@@ -1,6 +1,6 @@
 <script>
-    import FormCheckbox from "../../../components/FormCheckbox.svelte";
-    import FormInput from "../../../components/FormInput.svelte";
+    import FormCheckbox from "@components/FormCheckbox.svelte";
+    import FormInput from "@components/FormInput.svelte";
     import { router } from "@inertiajs/svelte";
 
     let { user, onClose } = $props()

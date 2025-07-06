@@ -1,7 +1,7 @@
 <script>
   import { router } from '@inertiajs/svelte';
   import { Link } from '@inertiajs/svelte';
-  import FormInput from '../../components/FormInput.svelte';
+  import FormInput from '@components/FormInput.svelte';
 
   let { organisation = {}, membership = {}, members = [], organisation_types = [], errors = {} } = $props();
   let org = $state(organisation);
