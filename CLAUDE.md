@@ -6,62 +6,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Rails 8.0 application called "myLocums-dasiy" that uses Inertia.js v2 with Svelte 5 for the frontend, creating a single-page application experience without traditional API endpoints. The application includes session-based user authentication and is styled with Tailwind CSS v4 and DaisyUI components.
 
-## Development Commands
+## Key Commands
 
-### Starting the Application
 ```bash
-# Start development server with both Rails and Vite
+# Start development server
 bin/dev
 
-# Start Rails server only
-bin/rails server
-
-# Start Vite development server only
-bin/vite dev
-```
-
-### Database Management
-```bash
-# Setup database
-bin/rails db:setup
-
-# Run migrations
-bin/rails db:migrate
-
-# Reset database
-bin/rails db:reset
-
-# Check migration status
-bin/rails db:migrate:status
-```
-
-### Testing
-```bash
 # Run tests
 bin/rails test
 
-# Run tests with database reset
-bin/rails test:db
-```
-
-### Asset Management
-```bash
-# Build frontend assets
-bin/rails vite:build
-
-# Clean built assets
-bin/rails vite:clobber
-
-# Verify Vite installation
-bin/rails vite:verify_install
-```
-
-### Code Quality
-```bash
-# Run RuboCop (Ruby linting)
+# Code quality
 bundle exec rubocop
-
-# Run Brakeman (security scanner)
 bundle exec brakeman
 ```
 
@@ -111,65 +66,20 @@ end
 - Current user/session stored in `Current` thread-local storage
 - User data sanitized via `User#sanitised` method before frontend exposure
 
-## File Structure Highlights
-
-```
-app/
-├── controllers/
-│   ├── concerns/authentication.rb    # Authentication logic
-│   ├── sessions_controller.rb        # Login/logout
-│   ├── passwords_controller.rb       # Password reset
-│   └── users_controller.rb           # User registration
-├── frontend/
-│   ├── components/                   # Reusable Svelte components (Navbar.svelte)
-│   ├── layouts/                      # Layout components (Layout.svelte)
-│   ├── pages/                        # Svelte page components (auto-resolved by Inertia)
-│   ├── entrypoints/                  # Vite entry points (inertia.js)
-│   └── assets/                       # Static assets
-├── models/
-│   ├── user.rb                       # User model with has_secure_password and sanitised method
-│   ├── session.rb                    # Session model for table-backed sessions
-│   └── current.rb                    # Thread-local current user/session storage
-```
-
-## Development Notes
+## Key Patterns
 
 ### Adding New Pages
-1. Create Svelte component in `app/frontend/pages/` (e.g., `users/profile.svelte`)
+1. Create Svelte component in `app/frontend/pages/`
 2. Add route in `config/routes.rb`
-3. Create controller action that renders with `render inertia: 'users/profile', props: { data: {} }`
+3. Create controller action that renders with `render inertia: 'page_name', props: { data: {} }`
 
 ### Svelte 5 Component Patterns
 ```svelte
 <script>
-  import { Link } from '@inertiajs/svelte';
-  
   let { user, errors = {} } = $props();
-  
   const isAuthenticated = $derived(!!user);
 </script>
-
-<!-- Use Link for internal navigation -->
-<Link href="/profile" class="btn">Profile</Link>
 ```
-
-### Data Flow
-- Controllers pass data via `props:` in `render inertia:`
-- Global data shared via `inertia_share` in ApplicationController
-- Access shared data in components via props from layout
-
-### Database Changes
-- Use `bin/rails generate migration` for schema changes
-- Run `bin/rails db:migrate` after creating migrations
-
-### Frontend Dependencies
-- Use `npm install` to add new frontend packages
-- Frontend dependencies are in `package.json`
-
-### Deployment
-- Application is configured for Kamal deployment
-- Uses Thruster for HTTP acceleration
-- Dockerfile included for containerization
 
 ## Multi-Entity Permission System
 
@@ -280,53 +190,20 @@ memberships
 - Modal patterns for destructive actions (deactivation)
 - Responsive grid layouts with `md:col-span-2` for full-width fields
 
-## Memories
+## Key Implementation Notes
 
-### Flash Message Implementation
-- Implemented flash messages within the Inertia.js integration
-- Flash messages are shared globally via `inertia_share` in ApplicationController
-- Can access flash messages in frontend components through shared props
-- Supports `success` and `error` flash message types
+### Flash Messages
+- Flash messages shared globally via `inertia_share` in ApplicationController
+- Supports Rails conventions (`notice`, `alert`) and semantic names (`success`, `error`)
+- Auto-dismiss: success/notice messages auto-hide after 2 seconds
+- Flash component at `app/frontend/components/Flash.svelte`
 
-### Email Verification and Access Control
-- Added email verification flow to enhance user authentication
-- Implemented `allow_unverified_access` helper method to manage user access based on email verification status
+### User Management
+- User deactivation system with `deactivated` boolean field and default scope filtering
+- Super admin operations use `User.unscoped` to access all users
+- Authentication system automatically logs out deactivated users
 
-### Inertia Props Passing
-- Passing props to inertia in controllers doesn't need .as_json, it can be as pure Ruby object. Default to this.
-
-### Multi-Entity System Implementation
-- Built comprehensive role-based permission system with STI organisations
-- Implemented entity switching with proper context management
-- Added member invitation system with email-based workflow
-- Soft deletion pattern for organisation deactivation
-- Frontend permission enforcement with backend validation layers
-
-### User Deactivation System
-- Added `deactivated` boolean field to users table with default scope filtering
-- Default scope `where(deactivated: false)` ensures only active users returned in normal queries
-- Super admin controllers use `User.unscoped` to access all users including deactivated
-- Authentication system automatically logs out deactivated users and destroys sessions
-- Validation prevents super admins from being deactivated
-- Frontend visual indicators (strikethrough) for deactivated users in admin interface
-
-### Enhanced Flash Message System
-- ApplicationController `inertia_share` supports both Rails conventions and semantic names:
-  ```ruby
-  flash: {
-    success: flash[:success],
-    error: flash[:error], 
-    notice: flash[:notice],
-    alert: flash[:alert]
-  }
-  ```
-- Auto-dismiss functionality: success/notice messages auto-hide after 2 seconds
-- Error/alert messages persist until manually dismissed
-- Enhanced styling with shadows and subtle animations
-- Flash component located at `app/frontend/components/Flash.svelte`
-
-### Super Admin User Management
-- Complete user CRUD operations via SuperAdminController
-- User deletion functionality with confirmation modal
-- Visual management interface with master-detail layout
-- All super admin operations use `User.unscoped` to manage both active and deactivated users
+### Development Patterns
+- Inertia props don't need `.as_json` - pass pure Ruby objects
+- When adding private methods, verify placement to avoid making public methods private
+- Super admin password updates filter empty fields: `update_params.except(:password, :password_confirmation)` when blank

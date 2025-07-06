@@ -71,14 +71,6 @@ class User < ApplicationRecord
     deactivated == true
   end
 
-  private
-
-  def cannot_deactivate_super_admin
-    if deactivated_changed? && deactivated? && super_admin?
-      errors.add(:deactivated, "Super admins cannot be deactivated")
-    end
-  end
-
   def link_pending_invites!
     # Find all pending invites for this user's email
     pending = Membership.pending.for_email(email_address)
@@ -90,5 +82,13 @@ class User < ApplicationRecord
     )
 
     pending.count
+  end
+
+  private
+
+  def cannot_deactivate_super_admin
+    if deactivated_changed? && deactivated? && super_admin?
+      errors.add(:deactivated, "Super admins cannot be deactivated")
+    end
   end
 end

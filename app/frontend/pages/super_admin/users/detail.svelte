@@ -1,17 +1,19 @@
 <script>
-    import FormCheckbox from "../../components/FormCheckbox.svelte";
-    import FormInput from "../../components/FormInput.svelte";
+    import FormCheckbox from "../../../components/FormCheckbox.svelte";
+    import FormInput from "../../../components/FormInput.svelte";
     import { router } from "@inertiajs/svelte";
 
     let { user, onClose } = $props()
     let data = $state(user ? { ...user } : null);
     let emailVerified = $state(false);
+    let newPassword = $state('');
   
     // Update data when user prop changes
     $effect(() => {
         if (user) {
             data = { ...user };
             emailVerified = !!user.email_verified_at;
+            newPassword = ''; // Reset password field when user changes
         } else {
             data = null;
         }
@@ -35,6 +37,12 @@
                 deactivated: data.deactivated
             }
         };
+
+        // Only include password if a new password is provided
+        if (newPassword && newPassword.trim() !== '') {
+            updateData.user.password = newPassword;
+            updateData.user.password_confirmation = newPassword;
+        }
 
         router.patch(`/super/users/${data.id}`, updateData);
     }
@@ -65,8 +73,6 @@
     }
 
 </script>
-
-<!-- Force animation -->
 
 
 {#if data}
@@ -108,6 +114,15 @@
             </div>
         </fieldset>
 
+        <!-- Form Fields : Manual Password Reset -->
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend">Manual Password Reset</legend>
+            Leave the password blank will mean user's password remains unchanged.
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+                <FormInput bind:value={newPassword} label="New Password" type="password"></FormInput>
+            </div>
+        </fieldset>
+
         <!-- Divider -->
         <div class="divider"></div>
 
@@ -118,50 +133,47 @@
 
     </form>
 </div>
-{/if}
 
+<!-- Button to trigger modal -->
+<div class="flex justify-center md:justify-end w-full max-w-full">
+    <button class="btn btn-link text-base-content link-hover" onclick={openModal}>Delete this User</button>
+</div>
 
-{#if data}
-    <!-- Button to trigger modal -->
-    <div class="flex justify-center md:justify-end w-full max-w-full">
-        <button class="btn btn-link text-base-content link-hover" onclick={openModal}>Delete this User</button>
-    </div>
-
-    <!-- Modal -->
-    <dialog bind:this={modal} class="modal">
-        <div class="modal-box bg-warning text-warning-content/75">
-            <h3 class="font-bold text-lg">Delete {data.first_name} {data.last_name}?</h3>
-            <p class="py-4">This action is irreversible. Deleting this user will permanently remove their account and all associated data from the system.</p>
-            
-            <!-- Confirmation Checkbox -->
-            <div class="form-control">
-                <label class="label cursor-pointer justify-start gap-3">
-                    <input 
-                        type="checkbox" 
-                        class="checkbox checkbox-error" 
-                        bind:checked={confirmDeletion}
-                    />
-                    <span class="label text-warning-content">I understand this action cannot be undone</span>
-                </label>
-            </div>
-            
-            <div class="modal-action">
-                <form method="dialog">
-                    <button 
-                        class="btn btn-error mx-4" 
-                        onclick={handleDelete}
-                        disabled={!confirmDeletion}
-                    >
-                        Yes, Delete
-                    </button>
-                    <button class="btn">Cancel</button>
-                </form>
-            </div>
+<!-- Delete Modal -->
+<dialog bind:this={modal} class="modal">
+    <div class="modal-box bg-warning text-warning-content/75">
+        <h3 class="font-bold text-lg">Delete {data.first_name} {data.last_name}?</h3>
+        <p class="py-4">This action is irreversible. Deleting this user will permanently remove their account and all associated data from the system.</p>
+        
+        <!-- Confirmation Checkbox -->
+        <div class="form-control">
+            <label class="label cursor-pointer justify-start gap-3">
+                <input 
+                    type="checkbox" 
+                    class="checkbox checkbox-error" 
+                    bind:checked={confirmDeletion}
+                />
+                <span class="label text-warning-content">I understand this action cannot be undone</span>
+            </label>
         </div>
-    </dialog>
+        
+        <div class="modal-action">
+            <form method="dialog">
+                <button 
+                    class="btn btn-error mx-4" 
+                    onclick={handleDelete}
+                    disabled={!confirmDeletion}
+                >
+                    Yes, Delete
+                </button>
+                <button class="btn">Cancel</button>
+            </form>
+        </div>
+    </div>
+</dialog>
 
-    <br>
-    <br>
+<br>
+<br>
 {/if}
 
 

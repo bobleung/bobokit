@@ -1,6 +1,6 @@
 <script>
-    import FormInput from "../../components/FormInput.svelte";
-    import FormCheckbox from "../../components/FormCheckbox.svelte";
+    import FormInput from "../../../components/FormInput.svelte";
+    import FormCheckbox from "../../../components/FormCheckbox.svelte";
     import { router } from "@inertiajs/svelte";
 
     let { selectedId = $bindable() } = $props()

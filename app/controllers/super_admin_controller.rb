@@ -3,7 +3,7 @@ class SuperAdminController < ApplicationController
 
   def users
     @users = User.unscoped.all
-    render inertia: "super_admin/users", props: { users: @users }
+    render inertia: "super_admin/users/index", props: { users: @users }
   end
 
   def create_user
@@ -13,7 +13,7 @@ class SuperAdminController < ApplicationController
       redirect_to "/super/users", notice: "User created successfully"
     else
       flash[:error] = @user.errors.full_messages
-      render inertia: "super_admin/users", props: {
+      render inertia: "super_admin/users/index", props: {
         users: User.unscoped.all
       }
     end
@@ -22,11 +22,17 @@ class SuperAdminController < ApplicationController
   def update_user
     @user = User.unscoped.find(params[:id])
 
-    if @user.update(user_params)
+    # Filter out empty password fields to avoid updating password when not intended
+    update_params = user_params
+    if update_params[:password].blank?
+      update_params = update_params.except(:password, :password_confirmation)
+    end
+
+    if @user.update(update_params)
       redirect_to "/super/users", notice: "User updated successfully"
     else
       flash[:error]=@user.errors.full_messages
-      render inertia: "super_admin/users", props: {
+      render inertia: "super_admin/users/index", props: {
         users: User.unscoped.all
       }
     end
@@ -41,7 +47,7 @@ class SuperAdminController < ApplicationController
       redirect_to "/super/users", alert: "Failed to delete user"
     end
   rescue ActiveRecord::RecordNotFound
-    redirect_to "/super/users", alert: "User not found"
+    redirect_to "/super/users/index", alert: "User not found"
   end
 
   def orgs
