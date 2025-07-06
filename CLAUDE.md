@@ -6,62 +6,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Rails 8.0 application called "myLocums-dasiy" that uses Inertia.js v2 with Svelte 5 for the frontend, creating a single-page application experience without traditional API endpoints. The application includes session-based user authentication and is styled with Tailwind CSS v4 and DaisyUI components.
 
-## Development Commands
+## Key Commands
 
-### Starting the Application
 ```bash
-# Start development server with both Rails and Vite
+# Start development server
 bin/dev
 
-# Start Rails server only
-bin/rails server
-
-# Start Vite development server only
-bin/vite dev
-```
-
-### Database Management
-```bash
-# Setup database
-bin/rails db:setup
-
-# Run migrations
-bin/rails db:migrate
-
-# Reset database
-bin/rails db:reset
-
-# Check migration status
-bin/rails db:migrate:status
-```
-
-### Testing
-```bash
 # Run tests
 bin/rails test
 
-# Run tests with database reset
-bin/rails test:db
-```
-
-### Asset Management
-```bash
-# Build frontend assets
-bin/rails vite:build
-
-# Clean built assets
-bin/rails vite:clobber
-
-# Verify Vite installation
-bin/rails vite:verify_install
-```
-
-### Code Quality
-```bash
-# Run RuboCop (Ruby linting)
+# Code quality
 bundle exec rubocop
-
-# Run Brakeman (security scanner)
 bundle exec brakeman
 ```
 
@@ -111,74 +66,153 @@ end
 - Current user/session stored in `Current` thread-local storage
 - User data sanitized via `User#sanitised` method before frontend exposure
 
-## File Structure Highlights
-
-```
-app/
-├── controllers/
-│   ├── concerns/authentication.rb    # Authentication logic
-│   ├── sessions_controller.rb        # Login/logout
-│   ├── passwords_controller.rb       # Password reset
-│   └── users_controller.rb           # User registration
-├── frontend/
-│   ├── components/                   # Reusable Svelte components (Navbar.svelte)
-│   ├── layouts/                      # Layout components (Layout.svelte)
-│   ├── pages/                        # Svelte page components (auto-resolved by Inertia)
-│   ├── entrypoints/                  # Vite entry points (inertia.js)
-│   └── assets/                       # Static assets
-├── models/
-│   ├── user.rb                       # User model with has_secure_password and sanitised method
-│   ├── session.rb                    # Session model for table-backed sessions
-│   └── current.rb                    # Thread-local current user/session storage
-```
-
-## Development Notes
+## Key Patterns
 
 ### Adding New Pages
-1. Create Svelte component in `app/frontend/pages/` (e.g., `users/profile.svelte`)
+1. Create Svelte component in `app/frontend/pages/`
 2. Add route in `config/routes.rb`
-3. Create controller action that renders with `render inertia: 'users/profile', props: { data: {} }`
+3. Create controller action that renders with `render inertia: 'page_name', props: { data: {} }`
 
 ### Svelte 5 Component Patterns
 ```svelte
 <script>
-  import { Link } from '@inertiajs/svelte';
-  
   let { user, errors = {} } = $props();
-  
   const isAuthenticated = $derived(!!user);
 </script>
-
-<!-- Use Link for internal navigation -->
-<Link href="/profile" class="btn">Profile</Link>
 ```
 
-### Data Flow
-- Controllers pass data via `props:` in `render inertia:`
-- Global data shared via `inertia_share` in ApplicationController
-- Access shared data in components via props from layout
+## Multi-Entity Permission System
 
-### Database Changes
-- Use `bin/rails generate migration` for schema changes
-- Run `bin/rails db:migrate` after creating migrations
+### System Overview
+- **Organisation Types**: Agency, Client, Locum (Single Table Inheritance)
+- **Role-Based Permissions**: Member, Admin, Owner roles with different capabilities
+- **Entity Switching**: Users can belong to multiple organisations and switch context
+- **Soft Deletion**: Organisations can be deactivated (preserved for data integrity)
 
-### Frontend Dependencies
-- Use `npm install` to add new frontend packages
-- Frontend dependencies are in `package.json`
+### Data Models
 
-### Deployment
-- Application is configured for Kamal deployment
-- Uses Thruster for HTTP acceleration
-- Dockerfile included for containerization
+#### Organisations (STI)
+```ruby
+# Agency, Client, Locum inherit from Organisation
+organisations
+├── type (string) # 'Agency', 'Client', 'Locum'
+├── name, email, phone
+├── address fields (UK format)
+├── code_type, code # License types/numbers for Locums
+├── parent_id # For Client hierarchies
+├── active (boolean, default: true) # Soft deletion
+└── timestamps
+```
 
-## Memories
+#### Memberships
+```ruby
+memberships
+├── user_id, entity_id (organisation)
+├── role (enum: member=0, admin=1, owner=2)
+├── invited_email # For pending invitations
+├── invite_accepted (boolean, default: false)
+└── timestamps
+```
 
-### Flash Message Implementation
-- Implemented flash messages within the Inertia.js integration
-- Flash messages are shared globally via `inertia_share` in ApplicationController
-- Can access flash messages in frontend components through shared props
-- Supports `success` and `error` flash message types
+### Permission Matrix
 
-### Email Verification and Access Control
-- Added email verification flow to enhance user authentication
-- Implemented `allow_unverified_access` helper method to manage user access based on email verification status
+| Action | Member | Admin | Owner |
+|--------|--------|--------|-------|
+| View organisation | ✅ | ✅ | ✅ |
+| Edit organisation | ❌ | ✅ | ✅ |
+| Invite members | ❌ | ✅ | ✅ |
+| Remove other members | ❌ | ✅ | ✅ |
+| Change member roles | ❌ | ✅ | ✅ |
+| Leave organisation | ✅ | ❌ | ❌ |
+| Deactivate organisation | ❌ | ❌ | ✅ |
+
+### Key Controllers
+
+#### OrganisationsController
+```ruby
+# Actions: new, create, show, edit, update, invite_member, remove_member, change_member_role, deactivate
+# Permission checks at controller level for admin/owner actions
+# Frontend permission checks for UI elements
+```
+
+#### UserContextController
+```ruby
+# Handles entity switching: POST /user/switch_context
+# Updates session[:current_entity_id]
+# Validates user has access to target entity
+```
+
+### Frontend Components
+
+#### EntitySwitcher Component
+- Integrated user profile dropdown with entity switching
+- Format: "Bob (Organisation Name)"
+- Handles pending invitations (Accept/Decline)
+- Uses proper Link vs Button patterns for different HTTP methods
+
+#### Navigation Patterns
+- **Link components**: GET requests only (Profile, Log Out, Manage Entity)
+- **Button components**: POST/PATCH/DELETE requests with router methods
+- **Dropdown closing**: Use `document.activeElement.blur()`
+
+### Key Business Rules
+
+#### Organisation Creation
+- Creator automatically becomes owner with `invite_accepted: true`
+- Automatic context switching to new organisation
+
+#### Membership Management
+- Email-based invitations with accept/decline flow
+- Members can remove themselves, admins/owners cannot
+- Owners cannot be removed
+
+#### Organisation Deactivation
+- Only owners can deactivate
+- Must remove all other members first
+- Marks `active: false` (soft deletion)
+- User context cleared, hidden from entity switcher
+
+### Context Management
+```ruby
+# ApplicationController inertia_share
+{
+  user: Current.user&.sanitised,
+  currentEntity: @current_context&.current_entity,
+  availableEntities: @current_context&.available_entities,
+  pendingInvites: Current.user&.pending_invites,
+  userContext: { role, permissions, super_admin }
+}
+```
+
+### DaisyUI Integration
+- Use native DaisyUI patterns: `avatar-placeholder`, fieldset components
+- Button styling: `btn-link` for link-style buttons
+- Modal patterns for destructive actions (deactivation)
+- Responsive grid layouts with `md:col-span-2` for full-width fields
+
+## Key Implementation Notes
+
+### Flash Messages
+- Flash messages shared globally via `inertia_share` in ApplicationController
+- Supports Rails conventions (`notice`, `alert`) and semantic names (`success`, `error`)
+- Auto-dismiss: success/notice messages auto-hide after 2 seconds
+- Flash component at `app/frontend/components/Flash.svelte`
+
+### User Management
+- User deactivation system with `deactivated` boolean field and default scope filtering
+- Super admin operations use `User.unscoped` to access all users
+- Authentication system automatically logs out deactivated users
+
+### Development Patterns
+- Inertia props don't need `.as_json` - pass pure Ruby objects
+- When adding private methods, verify placement to avoid making public methods private
+- Super admin password updates filter empty fields: `update_params.except(:password, :password_confirmation)` when blank
+
+## Component Organization
+- `app/frontend/components/*` is where I store the components
+- Added an alias to this folder, so components path is `@components/*`
+
+## Database Query Patterns
+
+### Arel Usage
+- Always use Arel (ActiveRecord's query builder) in controller to do DB queries so we stay DB agnostic
