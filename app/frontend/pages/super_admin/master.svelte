@@ -14,7 +14,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Super</th>
+                    <th>Super Admin</th>
                 </tr>
             </thead>
             <!-- Rows -->
@@ -22,9 +22,11 @@
                 {#each users as user}
                 <!-- Individual Row -->
                 <tr class="hover:bg-base-300 cursor-pointer
-                    {selectedId === user.id ? 'bg-primary/20' : user.deactivated ? 'line-through opacity-50' : ''}"
+                    {selectedId === user.id ? 'bg-primary/20' : ''} 
+                    {user.deactivated ? 'line-through' : ''} 
+                    {user.deactivated && selectedId !== user.id ? 'opacity-50' : ''}"
                     onclick={() => selectedUser(user.id)}>
-                    <th class="{user.deactivated ? 'line-through opacity-50':''}">{user.first_name + " " + user.last_name}</th>
+                    <th class="{user.deactivated ? 'line-through' : ''} {user.deactivated && selectedId !== user.id ? 'opacity-50' : ''}">{user.first_name + " " + user.last_name}</th>
                     <td>{user.email_address}
                         {#if !user.email_verified_at}
                             <span class="italic">(unverified)</span>
@@ -32,7 +34,7 @@
                     </td>
                     <td>
                     {#if user.super_admin}
-                        <div class="badge badge-primary badge-xs rounded-xl">Super Admin</div>
+                        <div class="badge badge-primary badge-xs rounded-xl">super</div>  
                     {/if}
                     </td>
                 </tr>

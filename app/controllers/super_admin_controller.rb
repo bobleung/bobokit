@@ -6,10 +6,6 @@ class SuperAdminController < ApplicationController
     render inertia: "super_admin/users", props: { users: @users }
   end
 
-  def show_user
-    @user = User.unscoped.find(params[:id])
-    render inertia: "super_admin/show_user", props: { user: @user }
-  end
 
   def update_user
     @user = User.unscoped.find(params[:id])

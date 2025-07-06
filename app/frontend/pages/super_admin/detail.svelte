@@ -1,16 +1,18 @@
 <script>
+    import FormCheckbox from "../../components/FormCheckbox.svelte";
     import FormInput from "../../components/FormInput.svelte";
     import { router } from "@inertiajs/svelte";
 
     let { user } = $props()
-    let data = $derived(user ? { ...user } : null);
+    let data = $state(user ? { ...user } : null);
     let emailVerified = $state(false);
-    // let deactivated = $state(false);
-    
-    // Update emailVerified and deactivated when data changes
+  
+    // Update data when user prop changes
     $effect(() => {
-        emailVerified = data ? !!data.email_verified_at : false;
-        // deactivated = data ? !!data.deactivated : false;
+        if (user) {
+            data = { ...user };
+            emailVerified = !!user.email_verified_at;
+        }
     });
 
     function handleSubmit(event){
@@ -53,53 +55,61 @@
         modal.showModal();
     }
 
+    function deselectUser(){
+        user = null
+    }
+
 </script>
 
 <!-- Form -->
 {#if data}
-<form
-    onsubmit={handleSubmit}
-    class="flex grow card card-body card-border shadow-sm w-full max-w-full max-h-full my-6"
->
-    <!-- Form Title -->
-    <div class="flex items-left gap-2">
-        <span class="material-symbols-outlined">edit</span>
-        <h2 class="card-title">Edit User</h2>
-    </div>
-
-    <!-- Form Fields : Basic Info -->
-    <fieldset class="fieldset">
-        <legend class="fieldset-legend">Basic Info</legend>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
-            <FormInput bind:value={data.first_name} label="First Name" type="text"></FormInput>
-            <FormInput bind:value={data.last_name} label="Last Name" type="text"></FormInput>
-            <FormInput bind:value={data.email_address} label="Email" type="email"></FormInput>
-            <label class="label text-base-content">
-                Super Admin
-                <input type="checkbox" bind:checked={data.super_admin} class="toggle toggle-success" />
-            </label>
-            <label class="label text-base-content">
-                Email Verified
-                <input type="checkbox" bind:checked={emailVerified} class="toggle toggle-success" />
-            </label>
-            <label class="label text-base-content">
-                Deactivate
-                <input type="checkbox" bind:checked={data.deactivated} class="toggle toggle-success" />
-            </label>
+<div class="card shadow-sm w-full max-w-full max-h-full my-6">
+    <!-- Form Header -->
+    <div class="flex items-center justify-between px-6 py-4 bg-base-200 rounded-t-lg">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-xl">edit</span>
+            <h2 class="text-lg font-semibold">Edit User</h2>
         </div>
-    </fieldset>
-
-    <!-- Divider -->
-    <div class="divider"></div>
-
-    <!-- Action Buttons -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <button class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-ghost btn-sm btn-square" onclick={deselectUser}>
+            <span class="material-symbols-outlined text-xl">close</span>
+        </button>
     </div>
-      
-      
+    
+    <form
+        onsubmit={handleSubmit}
+        class="card-body">
 
-</form>
+        <!-- Form Fields : Basic Info -->
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend">Basic Info</legend>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+                <FormInput bind:value={data.first_name} label="First Name" type="text"></FormInput>
+                <FormInput bind:value={data.last_name} label="Last Name" type="text"></FormInput>
+                <FormInput bind:value={data.email_address} label="Email" type="email"></FormInput>
+            </div>
+        </fieldset>
+
+        <!-- Form Fields : Advanced Settings -->
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend">Advanced Settings</legend>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+                <FormCheckbox bind:value={data.super_admin} label="Super Admin"></FormCheckbox>
+                <FormCheckbox bind:value={emailVerified} label="Email Verified"></FormCheckbox>
+                <FormCheckbox bind:value={data.deactivated} label="Deactivated"></FormCheckbox>
+            </div>
+        </fieldset>
+
+        <!-- Divider -->
+        <div class="divider"></div>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <button class="btn btn-primary">Update</button>
+        </div>
+
+    </form>
+</div>
+{/if}
 
 <!-- Deletion User Section -->
 {#if data}
@@ -143,5 +153,4 @@
 
     <br>
     <br>
-{/if}
 {/if}

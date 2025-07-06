@@ -48,17 +48,13 @@
     <!-- Super Admin Menu -->
     {#if isSuperAdmin}
       <span class="text-base-content/25">|</span>
-      <ul class="menu menu-horizontal px-1">
-        <li>
-          <details class="dropdown dropdown-hover">
-            <summary>Super Admin</summary>
-            <ul class="p-2 min-w-40">
-              <li><Link href="/super/users">Users</Link></li>
-              <li><Link href="/super/orgs">Orgs</Link></li>
-            </ul>
-          </details>
-        </li>
-      </ul>
+      <div class="dropdown dropdown-hover">
+        <div tabindex="0" role="button" class="btn btn-ghost">Super Admin</div>
+        <ul class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow">
+          <li><Link href="/super/users">Users</Link></li>
+          <li><Link href="/super/orgs">Orgs</Link></li>
+        </ul>
+      </div>
     {/if}
   </div>
 

@@ -50,7 +50,6 @@ Rails.application.routes.draw do
 
   # Super Admin Pages
   get "super/users", to: "super_admin#users"
-  get "super/users/:id", to: "super_admin#show_user"
   patch "super/users/:id", to: "super_admin#update_user"
   delete "super/users/:id", to: "super_admin#destroy_user"
   get "super/orgs", to: "super_admin#orgs"
