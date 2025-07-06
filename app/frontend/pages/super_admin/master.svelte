@@ -21,9 +21,10 @@
             <tbody>
                 {#each users as user}
                 <!-- Individual Row -->
-                <tr class="hover:bg-base-300 cursor-pointer {selectedId === user.id ? 'bg-primary/20' : ''}"
+                <tr class="hover:bg-base-300 cursor-pointer
+                    {selectedId === user.id ? 'bg-primary/20' : user.deactivated ? 'line-through opacity-50' : ''}"
                     onclick={() => selectedUser(user.id)}>
-                    <th>{user.first_name + " " + user.last_name}</th>
+                    <th class="{user.deactivated ? 'line-through opacity-50':''}">{user.first_name + " " + user.last_name}</th>
                     <td>{user.email_address}
                         {#if !user.email_verified_at}
                             <span class="italic">(unverified)</span>

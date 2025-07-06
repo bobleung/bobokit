@@ -13,13 +13,13 @@ class SuperAdminController < ApplicationController
 
   def update_user
     @user = User.unscoped.find(params[:id])
-    
+
     if @user.update(user_params)
       redirect_to "/super/users", notice: "User updated successfully"
     else
-      render inertia: "super_admin/users", props: { 
-        users: User.unscoped.all,
-        errors: @user.errors.full_messages
+      flash[:error]=@user.errors.full_messages
+      render inertia: "super_admin/users", props: {
+        users: User.unscoped.all
       }
     end
   end

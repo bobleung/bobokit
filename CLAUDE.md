@@ -301,3 +301,32 @@ memberships
 - Added member invitation system with email-based workflow
 - Soft deletion pattern for organisation deactivation
 - Frontend permission enforcement with backend validation layers
+
+### User Deactivation System
+- Added `deactivated` boolean field to users table with default scope filtering
+- Default scope `where(deactivated: false)` ensures only active users returned in normal queries
+- Super admin controllers use `User.unscoped` to access all users including deactivated
+- Authentication system automatically logs out deactivated users and destroys sessions
+- Validation prevents super admins from being deactivated
+- Frontend visual indicators (strikethrough) for deactivated users in admin interface
+
+### Enhanced Flash Message System
+- ApplicationController `inertia_share` supports both Rails conventions and semantic names:
+  ```ruby
+  flash: {
+    success: flash[:success],
+    error: flash[:error], 
+    notice: flash[:notice],
+    alert: flash[:alert]
+  }
+  ```
+- Auto-dismiss functionality: success/notice messages auto-hide after 2 seconds
+- Error/alert messages persist until manually dismissed
+- Enhanced styling with shadows and subtle animations
+- Flash component located at `app/frontend/components/Flash.svelte`
+
+### Super Admin User Management
+- Complete user CRUD operations via SuperAdminController
+- User deletion functionality with confirmation modal
+- Visual management interface with master-detail layout
+- All super admin operations use `User.unscoped` to manage both active and deactivated users
