@@ -1,11 +1,12 @@
 <script>
     import Master from './master.svelte';
     import Detail from './detail.svelte';
+    import DetailNew from './DetailNew.svelte';
     let { users } = $props()
     let selectedId = $state('');
     let selectedUser = $derived(users?.find(user => user.id === selectedId));
-    
-    function clearSelection() {
+
+    function deselectUser() {
         selectedId = '';
     }
 
@@ -29,9 +30,11 @@
         
         <!-- Right Column -->
         <div class="md:col-span-1">
-            <Detail user={selectedUser} onClose={clearSelection}></Detail>
+            {#if selectedId === "new"}
+                <DetailNew bind:selectedId={selectedId}></DetailNew>
+            {:else}
+                <Detail user={selectedUser} onClose={deselectUser}></Detail>
+            {/if}
         </div>
     </div>
 </div>
-
-

@@ -66,6 +66,8 @@
 
 </script>
 
+<!-- Force animation -->
+
 
 {#if data}
 <div class="card shadow-sm w-full max-w-full max-h-full my-6">
@@ -81,6 +83,7 @@
     </div>
     
     <!-- Form -->
+    
     <form
         onsubmit={handleSubmit}
         class="card-body">
@@ -117,7 +120,7 @@
 </div>
 {/if}
 
-<!-- Deletion User Section -->
+
 {#if data}
     <!-- Button to trigger modal -->
     <div class="flex justify-center md:justify-end w-full max-w-full">
@@ -160,3 +163,5 @@
     <br>
     <br>
 {/if}
+
+
