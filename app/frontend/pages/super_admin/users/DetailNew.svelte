@@ -56,7 +56,7 @@
 
 <div class="card shadow-sm w-full max-w-full max-h-full my-6 animate-fade-in">
     <!-- Panel Header -->
-    <div class="flex items-center justify-between px-6 py-4 bg-base-200 rounded-t-lg">
+    <div class="flex items-center justify-between px-4 py-2 gap-4 bg-base-200 rounded-t-lg">
         <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-xl">person</span>
             <h2 class="text-lg font-semibold">New User</h2>

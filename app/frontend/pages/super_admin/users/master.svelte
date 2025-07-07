@@ -26,7 +26,7 @@
 
 <div class="card shadow-sm w-full max-w-full max-h-full my-6">
     <!-- Panel Header -->
-    <div class="flex items-center justify-between px-6 py-4 bg-base-200 rounded-t-lg">
+    <div class="flex items-center justify-between px-4 py-2 bg-base-200 rounded-t-lg gap-4">
         <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-xl">group</span>
             <h2 class="text-lg font-semibold">Users</h2>
@@ -38,7 +38,7 @@
     </div>
     
     <div class="card-body overflow-x-auto">
-        <table class="table table-xs table-pin-rows">
+        <table class="table table-sm table-pin-rows">
             <!-- Column Headers -->
             <thead>
                 <tr>
