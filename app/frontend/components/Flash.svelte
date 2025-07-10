@@ -9,11 +9,11 @@
     if (flash.success || flash.error || flash.notice || flash.alert) {
       visible = true
       
-      // Auto-dismiss success and notice after 2 seconds
+      // Auto-dismiss success and notice after 4 seconds
       if (flash.success || flash.notice) {
         setTimeout(() => {
           visible = false;
-        }, 2000);
+        }, 4000);
       }
     }
   })

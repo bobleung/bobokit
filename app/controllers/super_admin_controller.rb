@@ -3,7 +3,7 @@ class SuperAdminController < ApplicationController
 
   def users
     @users = User.unscoped.all
-    
+
     # Filter by search term if provided
     if params[:search].present?
       search_term = "%#{params[:search]}%"
@@ -13,10 +13,10 @@ class SuperAdminController < ApplicationController
           .or(@users.arel_table[:email_address].matches(search_term))
       )
     end
-    
-    render inertia: "super_admin/users/index", props: { 
-      users: @users, 
-      search: params[:search] || '' 
+
+    render inertia: "super_admin/users/index", props: {
+      users: @users,
+      search: params[:search] || ""
     }
   end
 
@@ -65,7 +65,7 @@ class SuperAdminController < ApplicationController
   end
 
   def orgs
-    render inertia: "super_admin/orgs"
+    render inertia: "super_admin/orgs/index"
   end
 
   private

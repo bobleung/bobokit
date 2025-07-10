@@ -45,7 +45,7 @@
 <!-- Page Container below nav bar -->
 <div class="flex flex-col max-h-full">
     <!-- Page Title -->
-    <h1 class="font-bold text-2xl">Super Admin User Page</h1>
+    <h1 class="font-bold text-2xl mb-4">Super Admin User Page</h1>
 
     <!-- Page Body -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-full">
