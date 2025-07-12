@@ -24,7 +24,7 @@
 
 </script>
 
-<div class="card shadow-sm w-full max-w-full max-h-full my-6">
+<div class="card shadow-sm w-full max-w-full max-h-full">
     <!-- Panel Header -->
     <div class="flex items-center justify-between px-4 py-2 bg-base-200 rounded-t-lg gap-4">
         <div class="flex items-center gap-2">

@@ -54,7 +54,7 @@
 
 </script>
 
-<div class="card shadow-sm w-full max-w-full max-h-full my-6 animate-fade-in">
+<div class="card shadow-sm w-full max-w-full max-h-full">
     <!-- Panel Header -->
     <div class="flex items-center justify-between px-4 py-2 gap-4 bg-base-200 rounded-t-lg">
         <div class="flex items-center gap-2">

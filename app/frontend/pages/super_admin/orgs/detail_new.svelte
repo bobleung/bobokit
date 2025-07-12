@@ -1,0 +1,1 @@
+Detail New Panel
