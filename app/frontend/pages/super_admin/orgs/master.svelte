@@ -2,7 +2,15 @@
     import Search from "@components/Search.svelte"
 
     let { selectedId = $bindable(''), searchTerm = $bindable(), orgs } = $props()
-
+    let type = $state("Agency")
+    let typeIcon = $derived(ENTITIES[type].icon)
+    
+    function setType(newType, event) {
+        event.preventDefault()
+        type = newType
+        // You can add additional logic here when type changes
+        console.log(`Type changed to: ${newType}`)
+    }
     let search = ""
     selectedId = ""
     orgs = [
@@ -33,16 +41,26 @@
     <!-- Panel Header -->
     <div class="flex items-center justify-between px-4 py-2 bg-base-200 rounded-t-lg gap-4">
         <div class="flex items-center gap-2">
+
+            
+            <!-- Org Type Selector -->
             <div class="dropdown dropdown-hover">
-                <div tabindex="0" role="button" class="btn m-1">Hover</div>
-                <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                  <li><a>Agencies</a></li>
-                  <li><a>Clients</a></li>
-                  <li><a>Locums</a></li>
+                <div tabindex="0" role="button" class="btn m-1" aria-haspopup="menu" aria-expanded="false">
+                    <span class="material-symbols-outlined text-xl">{typeIcon}</span>
+                    {type}
+                </div>
+                <ul role="menu" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                  <li role="menuitem">
+                    <button type="button" class="w-full text-left" onclick={(e) => setType('Agency', e)}>Agencies</button>
+                  </li>
+                  <li role="menuitem">
+                    <button type="button" class="w-full text-left" onclick={(e) => setType('Client', e)}>Clients</button>
+                  </li>
+                  <li role="menuitem">
+                    <button type="button" class="w-full text-left" onclick={(e) => setType('Locum', e)}>Locums</button>
+                  </li>
                 </ul>
             </div>
-            <span class="material-symbols-outlined text-xl">group</span>
-            <h2 class="text-lg font-semibold">Orgs</h2>
         </div>
         <Search onSearch={handleSearch} initialValue={search}></Search>
         <button type="button" class="btn btn-ghost btn-xs btn-square" onclick={neworg}>

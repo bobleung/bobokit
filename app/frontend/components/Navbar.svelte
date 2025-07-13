@@ -2,13 +2,15 @@
   import { Link } from '@inertiajs/svelte';
   import EntitySwitcher from './EntitySwitcher.svelte';
   
-  let { user = null, currentEntity = null, availableEntities = [], pendingInvites = [] } = $props();
+  // let { user = null, currentEntity = null, availableEntities = [], pendingInvites = [], ...rest } = $props();
+  let { ...pageData } = $props();
   
-  const isAuthenticated = $derived(!!user);
-  const isSuperAdmin = $derived(user?.super_admin);
+  const isAuthenticated = $derived(!!pageData.user);
+  const isSuperAdmin = $derived(pageData.user?.super_admin);
 
   function showProps(){
-    console.log("User", user)
+    // console.log("Current Org", currentEntity)
+    console.log("Page Data", { ...pageData })
   }
   
 </script>
@@ -62,7 +64,7 @@
   <div class="navbar-end gap-2">
     {#if isAuthenticated}
       <!-- Entity Switcher with integrated user profile -->
-      <EntitySwitcher {currentEntity} {availableEntities} {pendingInvites} {user} />
+      <EntitySwitcher currentEntity={pageData.currentEntity} availableEntities={pageData.availableEntities} pendingInvites={pageData.pendingInvites} user={pageData.user} />
     {:else}
       <!-- Login button - shown when not authenticated -->
       <Link href="/login" class="btn btn-primary">Login</Link>

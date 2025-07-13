@@ -65,7 +65,10 @@ class SuperAdminController < ApplicationController
   end
 
   def orgs
-    render inertia: "super_admin/orgs/index"
+    @orgs = Organisation.where(type: "Agency")
+    render inertia: "super_admin/orgs/index", props: {
+      orgs: @orgs
+    }
   end
 
   private
