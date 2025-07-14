@@ -26,6 +26,11 @@
         }
     })
 
+    // Handle Closing Detail Panel
+    function closeDetailPanel() {
+        selectedId = '';
+    }
+
     // Reactive Console Logs
     $inspect("INDEX / Type: " + type);
     $inspect("INDEX / selectedId: " + selectedId);
@@ -50,7 +55,7 @@
             {#if selectedId === "new"}
                 <DetailNew></DetailNew>
             {:else}
-                <Detail { selected }></Detail>
+                <Detail data={ selected } {type} onClose={closeDetailPanel}></Detail>
             {/if}
         </div>
     </div>

@@ -1,4 +1,11 @@
 <script>
+    /**
+     * @typedef {Object} Props
+     * @property {boolean} value - The checkbox value (bindable)
+     * @property {string} label - The checkbox label text
+     */
+
+    /** @type {Props} */
     let { value = $bindable(false), label } = $props()
 </script>
 
