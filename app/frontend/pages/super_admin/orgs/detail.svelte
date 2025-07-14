@@ -1,6 +1,5 @@
 <script>
-    import FormCheckbox from "@components/FormCheckbox.svelte";
-    import FormInput from "@components/FormInput.svelte";
+    import {FormCheckbox, FormInput} from "@components"
     
     // Get props from parent
     let { data, type, onClose } = $props()
@@ -12,7 +11,8 @@
         localData = data ? structuredClone(data): null
     })
 
-    function handleSubmit(){
+    function handleSubmit(event){
+        event.preventDefault();
         console.log("Update")
     }
 </script>
