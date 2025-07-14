@@ -1,5 +1,9 @@
 <script>
-    let { selectedId } = $props()
+    let { selected } = $props()
 </script>
 
-Detail Panel {selectedId}
+{#if selected}
+    Detail Panel {selected.id} / {selected.name}
+{:else}
+    Select an organisation to view details
+{/if}

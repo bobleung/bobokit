@@ -1,7 +1,7 @@
 <script>
     import Search from "@components/Search.svelte"
 
-    let { selectedId = $bindable(''), searchTerm = $bindable(), orgs, type = $bindable() } = $props()
+    let { selectedId = $bindable(''), searchTerm = $bindable(), list, type = $bindable() } = $props()
     let typeIcon = $derived(ENTITIES[type].icon)
     
     function setType(newType, event) {
@@ -72,7 +72,7 @@
             </thead>
             <!-- Rows -->
             <tbody>
-                {#each orgs as org}
+                {#each list as org}
                 <!-- Individual Row -->
                 <tr class="hover:bg-base-300 cursor-pointer
                     {selectedId === org.id ? 'bg-primary/20' : ''} 
