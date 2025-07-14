@@ -2,8 +2,25 @@
     import Master from "./master.svelte"
     import Detail from "./detail.svelte"
     import DetailNew from "./detail_new.svelte"
+    import { router } from "@inertiajs/svelte";
 
-    let selectedId = ""
+    let { orgs, type }= $props()
+    $inspect(type);
+
+    let selectedId = $state("")
+    let previousType = type
+
+    // Reload Orgs when Type changes
+    $effect(() => {
+        if (type !== previousType) {
+            previousType = type
+            router.get("/super/orgs", {type }, {
+                preserveState:true,
+                preserveScroll: true
+            });
+        }
+    })
+
 </script>
 
 <!-- Page Container below nav bar -->
@@ -15,7 +32,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-full">
         <!-- Left Column -->
         <div class="md:col-span-1">
-            <Master></Master>
+            <Master {orgs} bind:type={type} bind:selectedId={selectedId}></Master>
         </div>
         
         <!-- Right Column -->
@@ -23,7 +40,7 @@
             {#if selectedId === "new"}
                 <DetailNew></DetailNew>
             {:else}
-                <Detail></Detail>
+                <Detail { selectedId }></Detail>
             {/if}
         </div>
     </div>

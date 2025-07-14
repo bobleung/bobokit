@@ -1,8 +1,7 @@
 <script>
     import Search from "@components/Search.svelte"
 
-    let { selectedId = $bindable(''), searchTerm = $bindable(), orgs } = $props()
-    let type = $state("Agency")
+    let { selectedId = $bindable(''), searchTerm = $bindable(), orgs, type = $bindable() } = $props()
     let typeIcon = $derived(ENTITIES[type].icon)
     
     function setType(newType, event) {
@@ -10,30 +9,22 @@
         type = newType
         // You can add additional logic here when type changes
         console.log(`Type changed to: ${newType}`)
+
     }
     let search = ""
-    selectedId = ""
-    orgs = [
-        {
-            id: 1,
-            name: "FML",
-            code: "123",
-            email_address: "fml@test.com"
-        },
-        {
-            id: 2,
-            name: "ABC",
-            code: "234",
-            email_address: "abc@test.com"
-        }
-    ]
 
     function handleSearch(){
         console.log("Search Triggered")
     }
 
     function neworg(){
-        console.log("New org Clicked")
+        selectedId = "new"
+        console.log("Selected ID : " + selectedId)
+    }
+
+    function handleSelectRow(id){
+        selectedId = id
+        console.log("Selected ID : " + selectedId)
     }
 </script>
 
@@ -61,6 +52,7 @@
                   </li>
                 </ul>
             </div>
+
         </div>
         <Search onSearch={handleSearch} initialValue={search}></Search>
         <button type="button" class="btn btn-ghost btn-xs btn-square" onclick={neworg}>
@@ -86,10 +78,10 @@
                     {selectedId === org.id ? 'bg-primary/20' : ''} 
                     {org.deactivated ? 'line-through' : ''} 
                     {org.deactivated && selectedId !== org.id ? 'opacity-50' : ''}"
-                    onclick={() => selectedorg(org.id)}>
+                    onclick={() => handleSelectRow(org.id)}>
                     <th >{org.name}</th>
                     <td>{org.code}</td>
-                    <td>{org.code}</td>
+                    <td>{org.email}</td>
                 </tr>
                 {/each}
             </tbody>

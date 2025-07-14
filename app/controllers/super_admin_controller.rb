@@ -65,9 +65,12 @@ class SuperAdminController < ApplicationController
   end
 
   def orgs
-    @orgs = Organisation.where(type: "Agency")
+    @type = params[:type].presence || "Client"
+    @orgs = Organisation.where(type: @type).order(:name)
+
     render inertia: "super_admin/orgs/index", props: {
-      orgs: @orgs
+      orgs: @orgs,
+      type: @type
     }
   end
 
