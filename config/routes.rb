@@ -54,4 +54,6 @@ Rails.application.routes.draw do
   patch "super/users/:id", to: "super_admin#update_user"
   delete "super/users/:id", to: "super_admin#destroy_user"
   get "super/orgs", to: "super_admin#orgs"
+  patch "super/orgs/:id", to: "super_admin#update_org"
+  delete "super/orgs/:id", to: "super_admin#destroy_org"
 end

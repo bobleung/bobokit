@@ -31,6 +31,20 @@
         selectedId = '';
     }
 
+    // Handle Update from Detail Panel
+    function handleUpdate(updatedData) {
+        console.log(`INDEX / Updated Data`, updatedData)
+        router.patch(`/super/orgs/${updatedData.id}`,
+        {organisation: updatedData
+        });
+    }
+
+    // Handle Delete from Detail Panel
+    function handleDelete(id) {
+    console.log(`INDEX / Delete Org id: ` + id)
+    router.delete(`/super/orgs/${id}`);
+    }
+
     // Reactive Console Logs
     $inspect("INDEX / Type: " + type);
     $inspect("INDEX / selectedId: " + selectedId);
@@ -55,7 +69,7 @@
             {#if selectedId === "new"}
                 <DetailNew></DetailNew>
             {:else}
-                <Detail data={ selected } {type} onClose={closeDetailPanel}></Detail>
+                <Detail data={ selected } {type} onClose={closeDetailPanel} onUpdate={handleUpdate} onDelete={handleDelete}></Detail>
             {/if}
         </div>
     </div>

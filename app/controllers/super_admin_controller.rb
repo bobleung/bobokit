@@ -74,9 +74,50 @@ class SuperAdminController < ApplicationController
     }
   end
 
+  def update_org
+    @org = Organisation.find(params[:id])
+    if @org.update(org_params)
+      # Return success response with updated data
+      flash[:success]="Org updated"
+      render inertia: "super_admin/orgs/index", props: {
+        orgs: Organisation.where(type: @org.type).order(:name),
+        type: @org.type
+      }
+    else
+      flash[:error]=@org.errors.full_messages
+      # Return error response
+      render inertia: "super_admin/orgs/index", props: {
+        orgs: Organisation.where(type: @org.type).order(:name),
+        type: @org.type
+      }
+    end
+  end
+
+  def destroy_org
+    @org = Organisation.find(params[:id])
+    if @org.destroy
+      flash[:success]="Org Deleted"
+      render inertia: "super_admin/orgs/index", props: {
+        orgs: Organisation.where(type: params[:type].presence || "Client").order(:name),
+        type: params[:type].presence || "Client"
+      }
+    else
+      flash[:error]=@org.errors.full_messages
+      render inertia: "super_admin/orgs/index", props: {
+        orgs: Organisation.where(type: params[:type].presence || "Client").order(:name),
+        type: params[:type].presence || "Client",
+        errors: @org.errors.full_messages
+      }
+    end
+  end
+
   private
 
   def user_params
     params.require(:user).permit(:first_name, :last_name, :email_address, :super_admin, :email_verified_at, :deactivated, :password, :password_confirmation)
+  end
+
+  def org_params
+    params.require(:organisation).permit(:name, :email, :phone, :address_line1, :address_line2, :city, :county, :postcode, :country, :code_type, :code, :note, :active)
   end
 end

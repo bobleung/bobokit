@@ -2,7 +2,7 @@
     import {FormCheckbox, FormInput} from "@components"
     
     // Get props from parent
-    let { data, type, onClose } = $props()
+    let { data, type, onClose, onUpdate, onDelete } = $props()
 
     // Make a local copy
     let localData = $state()
@@ -13,7 +13,17 @@
 
     function handleSubmit(event){
         event.preventDefault();
-        console.log("Update")
+        console.log("Update");
+        onUpdate(localData);
+    }
+
+    // Setup Deletion Modal
+    let modal = $state();
+    let confirmDeletion = $state(false);
+
+    function openModal() {
+        confirmDeletion = false;
+        modal.showModal();
     }
 </script>
 
@@ -77,6 +87,44 @@
 
     </form>
 </div>
+
+<!-- Button to trigger modal -->
+<div class="flex justify-center md:justify-end w-full max-w-full">
+    <button class="btn btn-link text-base-content link-hover" onclick={openModal}>Delete this {type}</button>
+</div>
+
+<!-- Delete Modal -->
+<dialog bind:this={modal} class="modal">
+    <div class="modal-box bg-warning text-warning-content/75">
+        <h3 class="font-bold text-lg">Delete {localData.name}?</h3>
+        <p class="py-4">This action is irreversible. Deleting this {type} will permanently remove it from the system. Associated users will not be deleted, but they will no longer have access to the system.</p>
+        
+        <!-- Confirmation Checkbox -->
+        <div class="form-control">
+            <label class="label cursor-pointer justify-start gap-3">
+                <input 
+                    type="checkbox" 
+                    class="checkbox checkbox-error" 
+                    bind:checked={confirmDeletion}
+                />
+                <span class="label text-warning-content">I understand this action cannot be undone</span>
+            </label>
+        </div>
+        
+        <div class="modal-action">
+            <form method="dialog">
+                <button 
+                    class="btn btn-error mx-4" 
+                    onclick={onDelete(localData.id)}
+                    disabled={!confirmDeletion}
+                >
+                    Yes, Delete
+                </button>
+                <button class="btn">Cancel</button>
+            </form>
+        </div>
+    </div>
+</dialog>
 
 {:else}
     Select an organisation to view details
