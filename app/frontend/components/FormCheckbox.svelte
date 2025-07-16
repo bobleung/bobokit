@@ -6,7 +6,7 @@
      */
 
     /** @type {Props} */
-    let { value = $bindable(false), label } = $props()
+    let { value = $bindable(), label } = $props()
 </script>
 
 <label class="label text-base-content">
