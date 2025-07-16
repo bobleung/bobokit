@@ -5,7 +5,6 @@
     import { router } from "@inertiajs/svelte";
 
     // Get Props
-    // let { jobs: list = [], type = '' }= $props()
     let { jobs: list, type}= $props()
 
     // Define Local Variables

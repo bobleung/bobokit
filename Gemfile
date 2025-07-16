@@ -44,6 +44,9 @@ group :development, :test do
 
   # Load environment variables from .env file
   gem "dotenv-rails"
+
+  # Fake data generation for development and testing
+  gem "faker"
 end
 
 group :development do
