@@ -23,13 +23,14 @@
         { 
             key: 'super_admin', 
             label: 'Super Admin',
+            type: 'badge',
+            style: 'badge-info badge-xs text-white',
             render: (user) => user.super_admin ? 'super' : ''
         }
     ]
     
     const rowStyles = [
-        ['item.deactivated === true', 'line-through opacity-50'],
-        ['item.super_admin === true', 'badge badge-primary badge-xs', 'super_admin']
+        ['item.deactivated === true', 'line-through opacity-50']
     ]
 
     function selectedUser(userId) {
