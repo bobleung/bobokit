@@ -1,8 +1,14 @@
 <script>
-    import Search from "@components/Search.svelte"
+    import { DataTable, Search } from "@components"
 
     let { selectedId = $bindable(''), searchTerm = $bindable(), list, type = $bindable() } = $props()
     let typeIcon = $derived(ENTITIES[type].icon)
+    
+    const columns = [
+        { key: 'name', label: 'Name' },
+        { key: 'code', label: 'Site Code' },
+        { key: 'email', label: 'Email' }
+    ]
     
     function setType(newType, event) {
         event.preventDefault()
@@ -60,31 +66,11 @@
         </button>
     </div>
     
-    <div class="card-body overflow-x-auto">
-        <table class="table table-sm table-pin-rows">
-            <!-- Column Headers -->
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Site Code</th>
-                    <th>Email</th>
-                </tr>
-            </thead>
-            <!-- Rows -->
-            <tbody>
-                {#each list as org}
-                <!-- Individual Row -->
-                <tr class="hover:bg-base-300 cursor-pointer
-                    {selectedId === org.id ? 'bg-primary/20' : ''} 
-                    {org.deactivated ? 'line-through' : ''} 
-                    {org.deactivated && selectedId !== org.id ? 'opacity-50' : ''}"
-                    onclick={() => handleSelectRow(org.id)}>
-                    <th >{org.name}</th>
-                    <td>{org.code}</td>
-                    <td>{org.email}</td>
-                </tr>
-                {/each}
-            </tbody>
-        </table>
-    </div>
+    <!-- Table --> 
+    <DataTable 
+        data={list}
+        {columns}
+        bind:selectedId
+        onRowSelect={handleSelectRow}
+    />
 </div>
