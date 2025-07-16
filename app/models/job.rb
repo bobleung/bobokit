@@ -48,6 +48,10 @@ class Job < ApplicationRecord
     started? && !completed?
   end
 
+  def as_json(options = {})
+    super(options.merge(include: [:agency, :client, :locum]))
+  end
+
   private
 
   def agency_must_be_agency_type

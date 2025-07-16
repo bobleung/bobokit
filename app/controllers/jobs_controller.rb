@@ -1,6 +1,6 @@
 class JobsController < ApplicationController
   def index
-    @jobs = Job.all
+    @jobs = Job.includes(:agency, :client, :locum).all
 
     render inertia: "jobs/index", props: {
       jobs: @jobs
