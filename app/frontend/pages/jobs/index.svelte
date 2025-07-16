@@ -5,14 +5,15 @@
     import { router } from "@inertiajs/svelte";
 
     // Get Props
-    let { jobs: list, type }= $props()
+    // let { jobs: list = [], type = '' }= $props()
+    let { jobs: list, type}= $props()
 
     // Define Local Variables
     let selectedId = $state(null)
     let previousType = type
 
     // Extract selected when selectedId changes
-    const selected = $derived(list.find(item => item.id === selectedId) || null)
+    const selected = $derived(list?.find(item => item.id === selectedId) || null)
 
     // Reload list when Type changes
     $effect(() => {
@@ -55,7 +56,7 @@
 <!-- Page Container below nav bar -->
 <div class="flex flex-col max-h-full">
     <!-- Page Title -->
-    <h1 class="font-bold text-2xl mb-6">Jobs Page</h1>
+    <h1 class="font-bold text-2xl mb-6">Bookings Page</h1>
 
     <!-- Page Body -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-full">

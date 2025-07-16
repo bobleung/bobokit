@@ -28,7 +28,7 @@
         </button>
         <div class="dropdown-content menu bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
           <ul>
-            <li><Link href="/bookings">Bookings</Link></li>
+            <li><Link href="/jobs">Bookings</Link></li>
             <li><Link href="/invoices">Invoices</Link></li>
           </ul>
         </div>
@@ -42,7 +42,7 @@
     <!-- User menu - only show navigation items when authenticated -->
     {#if isAuthenticated}
       <ul class="menu menu-horizontal px-1">
-        <li><Link href="/">Bookings</Link></li>
+        <li><Link href="/jobs">Bookings</Link></li>
         <li><Link href="/">Invoices</Link></li>
       </ul>
     {/if}
