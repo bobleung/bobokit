@@ -18,7 +18,18 @@
       return column.render(item);
     }
     
+    // Handle nested properties like 'agency.name'
+    if (column.key.includes('.')) {
+      return getNestedValue(item, column.key);
+    }
+    
     return item[column.key] ?? '';
+  }
+
+  function getNestedValue(obj, path) {
+    return path.split('.').reduce((current, key) => {
+      return current && current[key] !== undefined ? current[key] : '';
+    }, obj);
   }
 </script>
 

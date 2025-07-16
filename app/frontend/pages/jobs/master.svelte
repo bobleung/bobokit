@@ -8,7 +8,8 @@
         { key: 'start', label: 'Start' },
         { key: 'end', label: 'End' },
         { key: 'break_minutes', label: 'Break (mins)' },
-        { key: 'id', label: 'job id' }
+        { key: 'client.name', label: 'Client' },
+        { key: 'locum.name', label: 'Locum' },
     ]
 
     function handleSelectRow(id){
