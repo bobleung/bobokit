@@ -1,8 +1,15 @@
 <script>
-    import Search from "@components/Search.svelte"
+    import { DataTable, Search } from "@components"
 
     let {list, selectedId = $bindable()} = $props()
     let search = ""
+
+    const columns = [
+        { key: 'start', label: 'Start' },
+        { key: 'end', label: 'End' },
+        { key: 'break_minutes', label: 'Break (mins)' },
+        { key: 'id', label: 'job id' }
+    ]
 
     function handleSelectRow(id){
         selectedId = id
@@ -28,29 +35,10 @@
     </div>
     
     <!-- Table --> 
-    <div class="card-body overflow-x-auto">
-        <table class="table table-sm table-pin-rows">
-            <!-- Column Headers -->
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Site Code</th>
-                    <th>Email</th>
-                </tr>
-            </thead>
-            <!-- Rows -->
-            <tbody>
-                {#each list as item}
-                <!-- Individual Row -->
-                <tr class="hover:bg-base-300 cursor-pointer
-                    {selectedId === item.id ? 'bg-primary/20' : ''}"
-                    onclick={() => handleSelectRow(item.id)}>
-                    <th >{item.start}</th>
-                    <td>{item.end}</td>
-                    <td>{item.break_minutes}</td>
-                </tr>
-                {/each}
-            </tbody>
-        </table>
-    </div>
+    <DataTable 
+        data={list}
+        {columns}
+        bind:selectedId
+        onRowSelect={handleSelectRow}
+    />
 </div>
