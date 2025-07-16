@@ -10,6 +10,10 @@
         { key: 'email', label: 'Email' }
     ]
     
+    const rowStyles = [
+        ['item.active !== true', 'line-through opacity-50']
+    ]
+    
     function setType(newType, event) {
         event.preventDefault()
         type = newType
@@ -70,6 +74,7 @@
     <DataTable 
         data={list}
         {columns}
+        {rowStyles}
         bind:selectedId
         onRowSelect={handleSelectRow}
     />

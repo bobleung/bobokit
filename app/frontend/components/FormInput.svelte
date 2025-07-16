@@ -1,5 +1,5 @@
 <script>
-    let { value = $bindable(''), label, type, ...restProps } = $props()
+    let { value = $bindable(), label, type, ...restProps } = $props()
 </script>
 
 <label class="floating-label input validator w-full"><span>{label}</span>
