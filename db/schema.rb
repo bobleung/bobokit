@@ -10,7 +10,34 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_05_232600) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_16_042221) do
+  create_table "jobs", force: :cascade do |t|
+    t.datetime "start", null: false
+    t.datetime "end", null: false
+    t.integer "break_minutes"
+    t.datetime "actual_start"
+    t.datetime "actual_end"
+    t.integer "actual_break_minutes"
+    t.integer "client_pays"
+    t.integer "locum_gets"
+    t.integer "agency_gets"
+    t.text "notes_job"
+    t.text "notes_client"
+    t.text "notes_agency"
+    t.integer "agency_id"
+    t.integer "client_id", null: false
+    t.integer "locum_id"
+    t.string "owned_by", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agency_id"], name: "index_jobs_on_agency_id"
+    t.index ["client_id"], name: "index_jobs_on_client_id"
+    t.index ["end"], name: "index_jobs_on_end"
+    t.index ["locum_id"], name: "index_jobs_on_locum_id"
+    t.index ["owned_by"], name: "index_jobs_on_owned_by"
+    t.index ["start"], name: "index_jobs_on_start"
+  end
+
   create_table "memberships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "entity_id", null: false
@@ -74,6 +101,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_05_232600) do
     t.index ["verification_token"], name: "index_users_on_verification_token", unique: true
   end
 
+  add_foreign_key "jobs", "organisations", column: "agency_id"
+  add_foreign_key "jobs", "organisations", column: "client_id"
+  add_foreign_key "jobs", "organisations", column: "locum_id"
   add_foreign_key "memberships", "organisations", column: "entity_id"
   add_foreign_key "memberships", "users"
   add_foreign_key "organisations", "organisations", column: "parent_id"

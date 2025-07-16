@@ -57,3 +57,6 @@ Rails.application.routes.draw do
   patch "super/orgs/:id", to: "super_admin#update_org"
   delete "super/orgs/:id", to: "super_admin#destroy_org"
 end
+
+# Jobs
+resources :jobs
