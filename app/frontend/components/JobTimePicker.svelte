@@ -6,12 +6,7 @@
     let { 
     start = $bindable(),
     end = $bindable(),
-    break_minutes = $bindable(0),
-    timezone = 'Europe/London',
-    showDuration = false,
-    showClock = true,
-    debounceDelay = 500,
-    onChange = () => {}
+    break_minutes = $bindable(0)
     } = $props();
 
     // Local UI State
