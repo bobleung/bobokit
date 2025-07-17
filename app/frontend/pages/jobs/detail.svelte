@@ -40,7 +40,7 @@
         <div class="flex items-center justify-between px-4 py-2 gap-4 bg-base-200 rounded-t-lg">
             <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-xl">edit</span>
-                <h2 class="text-lg font-semibold">Edit ({duration.hoursAndMinutes})</h2>
+                <h2 class="text-lg font-semibold">Edit ({duration.hoursAndMinutesShort})</h2>
             </div>
             <button type="button" class="btn btn-ghost btn-xs btn-square" onclick={onClose}>
                 <span class="material-symbols-outlined">close</span>

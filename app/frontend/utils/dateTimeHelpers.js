@@ -54,6 +54,7 @@ export function formatLondonDateTime(utcTimestamp) {
  * @property {number} minutes - Total duration in minutes
  * @property {number} hours - Total duration in hours (including fractions)
  * @property {string} hoursAndMinutes - Formatted string (e.g., "8h 30m")
+ * @property {string} hoursAndMinutesShort - Compact formatted string (e.g., "8h 30m", "2h", "45m")
  */
 
 /**
@@ -85,9 +86,20 @@ export function getJobDuration(start, end, breakMinutes = 0) {
     // Format hours and minutes as string (e.g., "8h 30m")
     const hoursAndMinutes = `${hours}h ${remainingMinutes.toString().padStart(2, '0')}m`;
     
+    // Format with shorter version based on duration
+    let hoursAndMinutesShort = '';
+    if (hours === 0) {
+        hoursAndMinutesShort = `${remainingMinutes}m`;
+    } else if (remainingMinutes === 0) {
+        hoursAndMinutesShort = `${hours}h`;
+    } else {
+        hoursAndMinutesShort = `${hours}h ${remainingMinutes}m`;
+    }
+    
     return {
         minutes: workingMinutes,
         hours: hours + (remainingMinutes / 60),
-        hoursAndMinutes
+        hoursAndMinutes,
+        hoursAndMinutesShort
     };
 }
