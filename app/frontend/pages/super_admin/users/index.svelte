@@ -50,7 +50,7 @@
     <!-- Page Body -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-full">
         <!-- Left Column -->
-        <div class="md:col-span-1">
+        <div class="overflow-auto">
             <Master bind:selectedId={selectedId} bind:searchTerm={searchTerm} users={users}></Master>
         </div>
         

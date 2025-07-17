@@ -22,7 +22,7 @@
     }
 </script>
 
-<div class="card shadow-sm w-full h-full flex flex-col">
+<div class="card shadow-sm w-full max-w-full border-2 h-full flex">
     <!-- Panel Header -->
     <div class="flex items-center justify-between px-4 py-2 bg-base-200 rounded-t-sm gap-4">
         <div class="flex items-center gap-2">
@@ -35,13 +35,11 @@
         </button>
     </div>
     
-    <!-- Table -->
-    <div class="card-body overflow-auto">
-        <DataTable 
-            data={list}
-            {columns}
-            bind:selectedId
-            onRowSelect={handleSelectRow}
-        />
-    </div>
+    <!-- Table --> 
+    <DataTable 
+        data={list}
+        {columns}
+        bind:selectedId
+        onRowSelect={handleSelectRow}
+    />
 </div>

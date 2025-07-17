@@ -53,19 +53,19 @@
 </script>
 
 <!-- Page Container below nav bar -->
-<div class="flex flex-col max-h-full">
+<div class="flex flex-col h-full">
     <!-- Page Title -->
     <h1 class="font-bold text-2xl mb-6">Bookings Page</h1>
 
     <!-- Page Body -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-full">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full h-1 flex-1 min-h-0">
         <!-- Left Column -->
-        <div class="md:col-span-1">
+        <div class="overflow-auto p-0.5">
             <Master {list} bind:type={type} bind:selectedId={selectedId}></Master>
         </div>
         
         <!-- Right Column -->
-        <div class="md:col-span-1">
+        <div class="overflow-auto p-0.5">
             {#if selectedId === "new"}
                 <DetailNew></DetailNew>
             {:else}

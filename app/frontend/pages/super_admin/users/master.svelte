@@ -50,9 +50,9 @@
 
 </script>
 
-<div class="card shadow-sm w-full max-w-full max-h-full">
+<div class="card shadow-sm w-full h-full flex flex-col">
     <!-- Panel Header -->
-    <div class="flex items-center justify-between px-4 py-2 bg-base-200 rounded-t-lg gap-4">
+    <div class="flex items-center justify-between px-4 py-2 bg-base-200 rounded-t-sm gap-4">
         <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-xl">group</span>
             <h2 class="text-lg font-semibold">Users</h2>
@@ -64,11 +64,13 @@
     </div>
     
     <!-- Table --> 
-    <DataTable 
-        data={users}
-        {columns}
-        {rowStyles}
-        bind:selectedId
-        onRowSelect={selectedUser}
-    />
+    <div class="card-body overflow-auto">
+        <DataTable 
+            data={users}
+            {columns}
+            {rowStyles}
+            bind:selectedId
+            onRowSelect={selectedUser}
+        />
+    </div>
 </div>

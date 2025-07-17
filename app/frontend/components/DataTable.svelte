@@ -119,7 +119,6 @@
   Table container with horizontal scroll support
   Uses DaisyUI table classes for consistent styling
 -->
-<div class="card-body overflow-x-auto">
   <table class="table table-sm table-pin-rows">
     <!-- Column Headers -->
     <thead>
@@ -172,4 +171,3 @@
       {/each}
     </tbody>
   </table>
-</div>
