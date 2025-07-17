@@ -1,12 +1,14 @@
 <script>
     import { DataTable, Search } from "@components"
+    import { formatLondonDateTime } from "@utils"
 
     let {list, selectedId = $bindable()} = $props()
     let search = ""
 
     const columns = [
-        { key: 'start', label: 'Start' },
-        { key: 'end', label: 'End' },
+        { key: 'start', label: 'Date', render: (job) => `${formatLondonDateTime(job.start).date}`},
+        { key: 'start', label: 'Start', render: (job) => `${formatLondonDateTime(job.start).time}`},
+        { key: 'end', label: 'End', render: (job) => `${formatLondonDateTime(job.end).time}` },
         { key: 'break_minutes', label: 'Break (mins)' },
         { key: 'client.name', label: 'Client' },
         { key: 'locum.name', label: 'Locum' },

@@ -19,7 +19,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@components': path.resolve(__dirname, 'app/frontend/components')
+      '@components': path.resolve(__dirname, 'app/frontend/components'),
+      '@utils': path.resolve(__dirname, 'app/frontend/utils')
     }
   }
 })
