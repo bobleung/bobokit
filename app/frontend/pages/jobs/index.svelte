@@ -34,9 +34,9 @@
     // Handle Update from Detail Panel
     function handleUpdate(updatedData) {
         console.log(`INDEX / Updated Data`, updatedData)
-        router.patch(`/super/orgs/${updatedData.id}`,
-        {organisation: updatedData
-        });
+        // router.patch(`/super/orgs/${updatedData.id}`,
+        // {organisation: updatedData
+        // });
     }
 
     // Handle Delete from Detail Panel
@@ -64,7 +64,8 @@
             <Master {list} bind:type={type} bind:selectedId={selectedId}></Master>
         </div>
         
-        <!-- Right Column -->
+        <!-- Right Column, recommend to use "key" to force remount detail panel -->
+        {#key selectedId}
         <div class="overflow-auto p-0.5">
             {#if selectedId === "new"}
                 <DetailNew></DetailNew>
@@ -72,5 +73,6 @@
                 <Detail data={ selected } {type} onClose={closeDetailPanel} onUpdate={handleUpdate} onDelete={handleDelete}></Detail>
             {/if}
         </div>
+        {/key}
     </div>
 </div>

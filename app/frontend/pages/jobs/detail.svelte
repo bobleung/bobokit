@@ -1,11 +1,14 @@
 <script>
-    import {FormCheckbox, FormInput} from "@components"
+    import {FormCheckbox, FormInput, JobTimePicker} from "@components"
+    import { getJobDuration } from "@utils"
+    import { DateTime } from "luxon";
     
     // Get props from parent
     let { data, type, onClose, onUpdate, onDelete } = $props()
 
     // Make a local copy
     let localData = $state()
+    let duration = $derived(getJobDuration(localData.start, localData.end, localData.break_minutes))
 
     $effect(() => {
         localData = data ? structuredClone(data): null
@@ -25,15 +28,19 @@
         confirmDeletion = false;
         modal.showModal();
     }
+
+    // $inspect("Start", formatLondonDateTime(localData.start))
+    $inspect("duration: ", duration)
+    $inspect("localData: ", localData)
 </script>
 
 {#if localData}
-    <div class="card shadow-sm w-full max-w-full max-h-full">
+    <div class="card shadow-sm w-full max-w-full h-full">
          <!-- Panel Header -->
         <div class="flex items-center justify-between px-4 py-2 gap-4 bg-base-200 rounded-t-lg">
             <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-xl">edit</span>
-                <h2 class="text-lg font-semibold">Edit {type}</h2>
+                <h2 class="text-lg font-semibold">Edit ({duration.hoursAndMinutes})</h2>
             </div>
             <button type="button" class="btn btn-ghost btn-xs btn-square" onclick={onClose}>
                 <span class="material-symbols-outlined">close</span>
@@ -45,47 +52,53 @@
     
      <form
         onsubmit={handleSubmit}
-        class="card-body">
+        class="card-body overflow-auto">
 
         <!-- Form Fields : Basic Info -->
         <fieldset class="fieldset">
             <legend class="fieldset-legend">Basic Info</legend>
+            <JobTimePicker bind:start={localData.start} bind:end={localData.end} bind:break_minutes={localData.break_minutes}></JobTimePicker>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
-                <FormInput bind:value={localData.name} label="{type} Name" type="text"></FormInput>
-                <FormInput bind:value={localData.email} label="Email" type="email"></FormInput>
+                
+                <FormInput bind:value={localData.start} label="{type} Start" type="text"></FormInput>
+                <FormInput bind:value={localData.end} label="End" type="text"></FormInput>
+                <FormInput bind:value={localData.break_minutes} label="Break" type="number"></FormInput>
+                <FormInput bind:value={localData.agency.name} label="Agency" type="text"></FormInput>
+                <FormInput bind:value={localData.client.name} label="Client" type="text"></FormInput>
+                <FormInput bind:value={localData.locum.name} label="Locum" type="text"></FormInput>
             </div>
         </fieldset>
 
-        <!-- Form Fields : Address -->
+        <!-- Form Fields : Actuals -->
         <fieldset class="fieldset">
-            <legend class="fieldset-legend">Address</legend>
+            <legend class="fieldset-legend">Actual Worked Time</legend>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
-                <FormInput bind:value={localData.address_line1} label="Address Line 1" type="text"></FormInput>
-                <FormInput bind:value={localData.address_line2} label="Address Line 2" type="text"></FormInput>
-                <FormInput bind:value={localData.city} label="City" type="text"></FormInput>
-                <FormInput bind:value={localData.county} label="County" type="text"></FormInput>
-                <FormInput bind:value={localData.postcode} label="Postcode" type="text"></FormInput>
-                <FormInput bind:value={localData.country} label="Country" type="text"></FormInput>
+                <FormInput bind:value={localData.actual_start} label="Actual Start" type="text"></FormInput>
+                <FormInput bind:value={localData.actual_end} label="Actual End" type="text"></FormInput>
+                <FormInput bind:value={localData.actual_break_minutes} label="Actual Break" type="number"></FormInput>
             </div>
         </fieldset>
 
-        <!-- Form Fields : Advanced Settings -->
+        <!-- Form Fields : Notes -->
         <fieldset class="fieldset">
-            <legend class="fieldset-legend">Advanced Settings</legend>
+            <legend class="fieldset-legend">Notes</legend>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
-                <FormCheckbox bind:value={localData.active} label="Active"></FormCheckbox>
+                <FormInput bind:value={localData.notes_job} label="Notes Job" type="text"></FormInput>
+                <FormInput bind:value={localData.notes_client} label="Notes (by Client)" type="text"></FormInput>
+                <FormInput bind:value={localData.notes_agency} label="Notes (by Agency)" type="text"></FormInput>
             </div>
         </fieldset>
 
         <!-- Divider -->
         <div class="divider"></div>
 
-        <!-- Action Buttons -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button class="btn btn-primary">Update</button>
-        </div>
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button class="btn btn-primary">Update2</button>
+            </div>
 
     </form>
+
 </div>
 
 <!-- Button to trigger modal -->
