@@ -75,7 +75,7 @@
     $inspect("Start Time Changed:" + startTime)
     $inspect("End Time Changed:" + endTime)
     $inspect("Breaks Changed:" + breakMinutes)
-    $inspect("?????????? Duration:" + duration)
+    $inspect("Duration:" + duration)
     $inspect("Initialised State:" + isInitialised)
     $inspect("Start Changed:" + start)
 

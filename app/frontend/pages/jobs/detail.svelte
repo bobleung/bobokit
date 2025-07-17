@@ -1,14 +1,17 @@
 <script>
     import {FormCheckbox, FormInput, JobTimePicker} from "@components"
     import { getJobDuration } from "@utils"
-    import { DateTime } from "luxon";
     
     // Get props from parent
     let { data, type, onClose, onUpdate, onDelete } = $props()
 
     // Make a local copy
     let localData = $state()
-    let duration = $derived(getJobDuration(localData.start, localData.end, localData.break_minutes))
+    let duration = $derived(
+        localData 
+            ? getJobDuration(localData.start, localData.end, localData.break_minutes)
+            : { minutes: 0, hours: 0, hoursAndMinutes: '0h 00m', hoursAndMinutesShort: '0h' }
+    );
 
     $effect(() => {
         localData = data ? structuredClone(data): null
@@ -29,8 +32,7 @@
         modal.showModal();
     }
 
-    // $inspect("Start", formatLondonDateTime(localData.start))
-    $inspect("duration: ", duration)
+    // Logging
     $inspect("localData: ", localData)
 </script>
 
@@ -57,12 +59,12 @@
         <!-- Form Fields : Basic Info -->
         <fieldset class="fieldset">
             <legend class="fieldset-legend">Basic Info</legend>
-            <JobTimePicker bind:start={localData.start} bind:end={localData.end} bind:break_minutes={localData.break_minutes}></JobTimePicker>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
-                
-                <FormInput bind:value={localData.start} label="{type} Start" type="text"></FormInput>
-                <FormInput bind:value={localData.end} label="End" type="text"></FormInput>
-                <FormInput bind:value={localData.break_minutes} label="Break" type="number"></FormInput>
+                <span class="col-span-2"><JobTimePicker
+                    bind:start={localData.start}
+                    bind:end={localData.end}
+                    bind:break_minutes={localData.break_minutes}>
+                </JobTimePicker></span>
                 <FormInput bind:value={localData.agency.name} label="Agency" type="text"></FormInput>
                 <FormInput bind:value={localData.client.name} label="Client" type="text"></FormInput>
                 <FormInput bind:value={localData.locum.name} label="Locum" type="text"></FormInput>
@@ -73,9 +75,11 @@
         <fieldset class="fieldset">
             <legend class="fieldset-legend">Actual Worked Time</legend>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
-                <FormInput bind:value={localData.actual_start} label="Actual Start" type="text"></FormInput>
-                <FormInput bind:value={localData.actual_end} label="Actual End" type="text"></FormInput>
-                <FormInput bind:value={localData.actual_break_minutes} label="Actual Break" type="number"></FormInput>
+                <span class="col-span-2"><JobTimePicker
+                    bind:start={localData.actual_start}
+                    bind:end={localData.actual_end}
+                    bind:break_minutes={localData.actual_break_minutes}>
+                </JobTimePicker></span>
             </div>
         </fieldset>
 
