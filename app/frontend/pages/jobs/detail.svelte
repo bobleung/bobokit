@@ -17,7 +17,7 @@
         localData = data ? structuredClone(data): null
     })
 
-    function handleSubmit(event){
+    function onsubmit(event){
         event.preventDefault();
         console.log("Update");
         onUpdate(localData);
@@ -53,7 +53,7 @@
      <!-- Form -->
     
      <form
-        onsubmit={handleSubmit}
+        {onsubmit}
         class="card-body overflow-auto">
 
         <!-- Form Fields : Basic Info -->

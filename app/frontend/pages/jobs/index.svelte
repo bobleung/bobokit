@@ -34,9 +34,9 @@
     // Handle Update from Detail Panel
     function handleUpdate(updatedData) {
         console.log(`INDEX / Updated Data`, updatedData)
-        // router.patch(`/super/orgs/${updatedData.id}`,
-        // {organisation: updatedData
-        // });
+        router.patch(`/jobs/${updatedData.id}`,
+            {job: updatedData
+        });
     }
 
     // Handle Delete from Detail Panel

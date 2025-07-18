@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :jobs
   resource :session
   resources :passwords, param: :token
   get "inertia-example", to: "inertia_example#index"
@@ -57,7 +56,7 @@ Rails.application.routes.draw do
   get "super/orgs", to: "super_admin#orgs"
   patch "super/orgs/:id", to: "super_admin#update_org"
   delete "super/orgs/:id", to: "super_admin#destroy_org"
-end
 
-# Jobs
-resources :jobs
+  # Jobs
+  resources :jobs
+end

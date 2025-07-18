@@ -19,6 +19,11 @@
         console.log("Selected ID : " + selectedId)
     }
 
+    function handleNew(){
+        selectedId = "new"
+        console.log("Selected ID : " + selectedId)
+    }
+
     function handleSearch(){
         console.log("Search Triggered")
     }
@@ -32,7 +37,7 @@
             <h2 class="text-lg font-semibold">Bookings</h2>
         </div>
         <Search onSearch={handleSearch} initialValue={search}></Search>
-        <button type="button" class="btn btn-ghost btn-xs btn-square" onclick={newUser}>
+        <button type="button" class="btn btn-ghost btn-xs btn-square" onclick={handleNew}>
             <span class="material-symbols-outlined">add</span>
         </button>
     </div>
@@ -46,4 +51,5 @@
             onRowSelect={handleSelectRow}
         />
     </div>
+
 </div>
