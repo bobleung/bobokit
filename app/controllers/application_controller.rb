@@ -34,24 +34,56 @@ class ApplicationController < ActionController::Base
 
   private
 
+  # ===================================================================
+  # ENTITY CONTEXT MANAGEMENT
+  # 
+  # This application supports multi-entity contexts where users can
+  # belong to multiple organisations (Agency, Client, Locum) and switch
+  # between them. The current context is stored in session[:current_entity_id]
+  # and loaded on every request.
+  # ===================================================================
+
+  # Loads user's current entity context on every request
+  # Called by: before_action :load_user_context, if: :authenticated?
+  # 
+  # FLOW:
+  # 1. Reads session[:current_entity_id] 
+  # 2. Validates user still has access to that entity
+  # 3. Auto-corrects session if user lost access (falls back to first available)
+  # 4. Sets @current_context for use in controllers/views
+  #
+  # RESULT: @current_context becomes available with user's role, permissions, entity info
   def load_user_context
     return unless Current.user
 
     entity_id = session[:current_entity_id]
     @current_context = Current.user.create_context(entity_id)
 
-    # Store the valid entity_id back to session
+    # Store the valid entity_id back to session (auto-correction if needed)
     session[:current_entity_id] = @current_context.current_entity&.id
   end
 
+  # Validates and switches user to a different entity context
+  # Called by: UserContextController, OrganisationsController, MembershipsController
+  # 
+  # PARAMETERS:
+  # - entity_id: ID of the organisation to switch to
+  #
+  # RETURNS:
+  # - true: Successfully switched, session updated, @current_context refreshed
+  # - false: User doesn't have access to that entity, no changes made
+  #
+  # SECURITY: Validates user has an accepted membership for the target entity
   def switch_entity_context(entity_id)
     return unless Current.user
 
     @current_context = Current.user.create_context(entity_id)
     if @current_context.valid?
       session[:current_entity_id] = entity_id
+      Rails.logger.info "✅ User #{Current.user.id} switched to entity #{entity_id}"
       true
     else
+      Rails.logger.warn "❌ User #{Current.user.id} denied access to entity #{entity_id}"
       false
     end
   end
