@@ -172,9 +172,45 @@ memberships
 - Marks `active: false` (soft deletion)
 - User context cleared, hidden from entity switcher
 
-### Context Management
+### Entity Context Architecture & Session Management
+
+#### Dual Session System
+- **Authentication**: Table-backed `Session` model stores user authentication (`user_id`, `ip_address`, `user_agent`)
+- **Context Switching**: Rails session cookie stores temporary state (`current_entity_id`)
+- **Security**: Both use separate mechanisms - database for persistence, encrypted cookies for temporary UI state
+
+#### Context Loading Flow (Every Request)
+1. `before_action :load_user_context` runs on every authenticated request
+2. Reads `session[:current_entity_id]` from encrypted cookie
+3. Validates user still has access to that entity via database lookup
+4. Auto-corrects session if user lost access (falls back to first available entity)
+5. Creates `@current_context` object with role, permissions, entity info
+
+#### Entity Switching Flow
+1. User clicks EntitySwitcher dropdown → `POST /user/switch_context`
+2. `UserContextController#switch_context` → `ApplicationController#switch_entity_context`
+3. Validates user has accepted membership for target entity
+4. Updates `session[:current_entity_id]` in encrypted cookie
+5. Subsequent requests automatically use new context
+
+#### Multi-Device Support
+- Each browser/device gets independent session and context
+- Same user can act as different entities on different devices
+- Context switching is device-specific, not global
+
+#### Context Data Available
 ```ruby
-# ApplicationController inertia_share
+# Authentication (from Session model)
+Current.user                    # <User object>
+Current.user.super_admin?       # Global admin status
+
+# Entity Context (from @current_context)
+@current_context.current_entity       # <Organisation object> (Agency/Client/Locum)
+@current_context.role                 # "member"/"admin"/"owner"
+@current_context.can_manage_users?    # Permission check
+@current_context.available_entities  # Entities user can switch to
+
+# Frontend Access (via inertia_share)
 {
   user: Current.user&.sanitised,
   currentEntity: @current_context&.current_entity,
@@ -183,6 +219,12 @@ memberships
   userContext: { role, permissions, super_admin }
 }
 ```
+
+#### Rails Best Practices Followed
+- **Session management in ApplicationController**: Standard Rails pattern for shared functionality
+- **Entity switching validation on every request**: Prevents privilege escalation
+- **Encrypted cookie sessions**: Rails default, secure for temporary UI state
+- **Database sessions for authentication**: Persistent, auditable, revocable
 
 ### DaisyUI Integration
 - Use native DaisyUI patterns: `avatar-placeholder`, fieldset components
@@ -207,6 +249,32 @@ memberships
 - Inertia props don't need `.as_json` - pass pure Ruby objects
 - When adding private methods, verify placement to avoid making public methods private
 - Super admin password updates filter empty fields: `update_params.except(:password, :password_confirmation)` when blank
+
+### Code Organization & Documentation Principles
+
+#### Following Rails Conventions
+- **Keep session management in ApplicationController**: Standard Rails pattern for shared controller functionality
+- **Use `before_action` for request-wide concerns**: Entity context loading, authentication checks
+- **Inherit shared methods**: Other controllers call `switch_entity_context` from ApplicationController
+- **Don't over-engineer**: Sometimes the Rails way is the right way, even if logic is split across files
+
+#### Documentation Strategy
+- **Comprehensive file headers**: Explain purpose, related files, and main flows
+- **Method-level documentation**: Parameters, returns, security considerations, usage examples
+- **Data reference sections**: What context data is available and how to access it
+- **Frontend integration docs**: How backend data flows to Svelte components via `inertia_share`
+- **Practical examples**: Controller usage patterns, permission checking, entity filtering
+
+#### When to Consolidate vs Split
+- **Consolidate**: When logic is truly cohesive and used in one place
+- **Split**: When following Rails conventions (like session management in ApplicationController)
+- **Document**: When logic is necessarily split, use clear documentation to show the flow
+- **Avoid**: Over-engineering with service objects for simple Rails patterns
+
+#### Strong Parameters Best Practices
+- **Never use `.to_unsafe_h`**: Always use proper strong parameters with `.permit()`
+- **Include foreign keys**: Don't forget `agency_id`, `client_id`, `locum_id` in permitted params
+- **Return appropriate responses**: For API-like updates, consider JSON responses vs full page reloads
 
 ## Component Organization
 - `app/frontend/components/*` is where I store the components
