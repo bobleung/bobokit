@@ -37,7 +37,22 @@ class JobsController < ApplicationController
   private
 
   def get_jobs
-    @jobs = Job.includes(:agency, :client, :locum).all
+    # Only return jobs that user's entity has access to
+    return @jobs = [] unless @current_context&.current_entity
+
+    entity_type = @current_context.current_entity.type
+    entity_id = @current_context.current_entity.id
+
+    @jobs = case entity_type
+    when "Agency"
+              Job.includes(:agency, :client, :locum).where(agency_id: entity_id)
+    when "Client"
+              Job.includes(:agency, :client, :locum).where(client_id: entity_id)
+    when "Locum"
+              Job.includes(:agency, :client, :locum).where(locum_id: entity_id)
+    else
+              Job.none
+    end
   end
 
   def job_params
