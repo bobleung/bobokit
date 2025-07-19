@@ -15,6 +15,7 @@ class ApplicationController < ActionController::Base
   # 5. Decrypt Rails session cookie to get entity_id (no DB call)
   # 6. Validate user still belongs to entity_id (1 DB call to memberships)
   # 7. Set @current_context and update session cookie with corrected entity_id
+  #    (auto-corrects if user lost access, sets to first available entity)
   #
   # TOTAL: 4 DB calls per authenticated request
   # - 3 for authentication (session lookup + user lookup + user association)
@@ -23,7 +24,7 @@ class ApplicationController < ActionController::Base
   # These objects become globally available for the request:
   #
   # - Current.user (User model with properties):
-  #   - .id, .email_address, .password_digest
+  #   - .id, .email_address, .password_digest, .first_name, .last_name
   #   - .super_admin?, .active?, .deactivated?, .email_verified?
   #   - .memberships, .available_entities, .pending_invites
   #
@@ -34,7 +35,7 @@ class ApplicationController < ActionController::Base
   #   - .role ("member"/"admin"/"owner")
   #   - .can_manage_users?, .can_delete_organisation?, .super_admin?
   #   - .available_entities
-  #   - .valid? (checks if user is authenticated, access to entity)
+  #   - .valid? (checks if user has complete entity context)
   # ===================================================================
 
   inertia_share do
