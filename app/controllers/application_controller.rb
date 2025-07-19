@@ -5,6 +5,38 @@ class ApplicationController < ActionController::Base
 
   before_action :load_user_context, if: :authenticated?
 
+  # ===================================================================
+  # THIS HAPPENS ON EVERY AUTHENTICATED REQUEST
+  #
+  # 1. Decrypt session_id cookie sent by browser (no DB call)
+  # 2. Look up Session record by session_id (1 DB call)
+  # 3. Look up User record to check if deactivated (1 DB call)
+  # 4. Access session.user for Current.user (1 DB call if not cached)
+  # 5. Decrypt Rails session cookie to get entity_id (no DB call)
+  # 6. Validate user still belongs to entity_id (1 DB call to memberships)
+  # 7. Set @current_context and update session cookie with corrected entity_id
+  #
+  # TOTAL: 4 DB calls per authenticated request
+  # - 3 for authentication (session lookup + user lookup + user association)
+  # - 1 for entity context validation
+  #
+  # These objects become globally available for the request:
+  #
+  # - Current.user (User model with properties):
+  #   - .id, .email_address, .password_digest
+  #   - .super_admin?, .active?, .deactivated?, .email_verified?
+  #   - .memberships, .available_entities, .pending_invites
+  #
+  # - @current_context (UserContext object with properties):
+  #   - .current_user (User object)
+  #   - .current_entity (Organisation object: .id, .name, .type, .active)
+  #   - .current_membership (Membership object: .role, .invite_accepted)
+  #   - .role ("member"/"admin"/"owner")
+  #   - .can_manage_users?, .can_delete_organisation?, .super_admin?
+  #   - .available_entities
+  #   - .valid? (checks if user is authenticated, access to entity)
+  # ===================================================================
+
   inertia_share do
     {
       user: Current.user&.sanitised,
@@ -34,25 +66,8 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # ===================================================================
-  # ENTITY CONTEXT MANAGEMENT
-  # 
-  # This application supports multi-entity contexts where users can
-  # belong to multiple organisations (Agency, Client, Locum) and switch
-  # between them. The current context is stored in session[:current_entity_id]
-  # and loaded on every request.
-  # ===================================================================
+  # If user is logged in, the check/ set their context
 
-  # Loads user's current entity context on every request
-  # Called by: before_action :load_user_context, if: :authenticated?
-  # 
-  # FLOW:
-  # 1. Reads session[:current_entity_id] 
-  # 2. Validates user still has access to that entity
-  # 3. Auto-corrects session if user lost access (falls back to first available)
-  # 4. Sets @current_context for use in controllers/views
-  #
-  # RESULT: @current_context becomes available with user's role, permissions, entity info
   def load_user_context
     return unless Current.user
 
@@ -65,7 +80,7 @@ class ApplicationController < ActionController::Base
 
   # Validates and switches user to a different entity context
   # Called by: UserContextController, OrganisationsController, MembershipsController
-  # 
+  #
   # PARAMETERS:
   # - entity_id: ID of the organisation to switch to
   #
